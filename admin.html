@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>백중연 예약 관리</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--paper:#F3ECDC; --ink:#221C15; --brown:#8A5A33; --tan:#C7B08A; --seal:#9C3B22; --ok:#2E6B3E}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; font-size:15px; padding:16px calc(env(safe-area-inset-right,0px) + 16px) 60px calc(env(safe-area-inset-left,0px) + 16px)}
+h1{font-size:1.3rem; margin:10px 0 4px}
+.sub{color:var(--brown); font-size:.85rem; margin:0 0 18px}
+/* 로그인 */
+#gate{max-width:340px; margin:12vh auto; text-align:center}
+#gate input{width:100%; padding:13px; font-size:1.1rem; text-align:center; letter-spacing:6px; border:1.5px solid var(--ink); background:#fff; border-radius:0}
+#gate button{width:100%; margin-top:10px; padding:13px; font-size:1rem; background:var(--ink); color:var(--paper); border:none; cursor:pointer}
+#gate .err{color:var(--seal); font-size:.85rem; min-height:1.2em; margin-top:8px}
+/* 요약 */
+.sum{display:flex; gap:10px; flex-wrap:wrap; margin:0 0 14px}
+.sumcard{flex:1 1 150px; border:1.4px solid var(--ink); background:#fff; padding:10px 12px}
+.sumcard b{display:block; font-size:.85rem; margin-bottom:4px}
+.sumcard .nums{font-size:.85rem; line-height:1.7}
+.sumcard .rem{font-weight:700}
+.sumcard .rem.full{color:var(--seal)}
+/* 필터 */
+.bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+.bar button{padding:7px 12px; border:1.2px solid var(--ink); background:#fff; cursor:pointer; font-size:.85rem}
+.bar button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
+.bar .sp{flex:1}
+.bar .act{border-color:var(--brown); color:var(--brown)}
+/* 표 */
+.wrap{overflow-x:auto; border:1.4px solid var(--ink); background:#fff}
+table{width:100%; border-collapse:collapse; min-width:760px; font-size:.85rem}
+th,td{padding:9px 10px; border-bottom:1px solid rgba(138,90,51,.25); text-align:left; vertical-align:middle}
+th{background:#EFE6D2; font-size:.78rem; letter-spacing:1px; position:sticky; top:0}
+tr:last-child td{border-bottom:none}
+tr.st-cancelled td{color:#999}
+tr.st-cancelled .nm{text-decoration:line-through}
+.st{display:inline-block; padding:2px 8px; font-size:.75rem; border:1.2px solid; white-space:nowrap}
+.st.pending{border-color:var(--brown); color:var(--brown)}
+.st.confirmed{border-color:var(--ok); color:var(--ok); font-weight:700}
+.st.cancelled{border-color:#999; color:#999}
+.st.expired{border-color:var(--seal); color:var(--seal)}
+td .btns{display:flex; gap:5px; flex-wrap:wrap}
+td .btns button{padding:5px 9px; font-size:.75rem; border:1.2px solid var(--ink); background:#fff; cursor:pointer; white-space:nowrap}
+td .btns .b-ok{border-color:var(--ok); color:var(--ok)}
+td .btns .b-cx{border-color:var(--seal); color:var(--seal)}
+td .btns button:disabled{opacity:.35; cursor:default}
+td.memo input{width:110px; padding:4px 6px; font-size:.78rem; border:1px solid var(--tan); background:#FDFBF5}
+a.tel{color:var(--ink)}
+.empty{padding:30px; text-align:center; color:var(--brown)}
+#toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:10px 18px; font-size:.85rem; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90vw}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>백중연 예약 관리</h1>
+  <p class="sub">관리 암호를 입력하세요</p>
+  <input type="password" id="pw" inputmode="numeric" autocomplete="off" placeholder="····">
+  <button id="enter">입장</button>
+  <p class="err" id="gateErr"></p>
+</div>
+
+<div id="app" style="display:none">
+  <h1>백중연 예약 관리</h1>
+  <p class="sub">2026.10.10(토) · 10.11(일) — 하루 8팀 · 입금 확인 순 확정 · 24시간 미입금은 자동으로 자리 반환(기한경과)</p>
+
+  <div class="sum" id="sum"></div>
+
+  <div class="bar">
+    <button data-d="all" aria-pressed="true">전체 날짜</button>
+    <button data-d="2026-10-10">10일(토)</button>
+    <button data-d="2026-10-11">11일(일)</button>
+    <span style="width:10px"></span>
+    <button data-s="all" aria-pressed="true">모든 상태</button>
+    <button data-s="pending">입금대기</button>
+    <button data-s="confirmed">확정</button>
+    <button data-s="expired">기한경과</button>
+    <button data-s="cancelled">취소</button>
+    <span class="sp"></span>
+    <button class="act" id="csv">CSV 내려받기</button>
+    <button class="act" id="reload">새로고침</button>
+  </div>
+
+  <div class="wrap">
+    <table>
+      <thead><tr>
+        <th>신청시각</th><th>날짜</th><th>대표자</th><th>연락처</th><th>인원</th>
+        <th>차량</th><th>동의</th><th>상태</th><th>처리</th><th>메모</th>
+      </tr></thead>
+      <tbody id="tb"><tr><td colspan="10" class="empty">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const CONFIG = {
+  SUPABASE_URL: 'https://snaldhxucwsaifqrccih.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYWxkaHh1Y3dzYWlmcXJjY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzIwNjAsImV4cCI6MjEwMzg0ODA2MH0.TUdhun_cBHsool0e2FZOOfznjFoC_u5B0MJCl1dTDhI',
+  CAPACITY: 8
+};
+const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+let PASS = sessionStorage.getItem('by_pass') || '';
+let rows = [], fD = 'all', fS = 'all';
+const DL = { '2026-10-10':'10일(토)', '2026-10-11':'11일(일)' };
+const SL = { pending:'입금대기', confirmed:'확정', cancelled:'취소', expired:'기한경과' };
+const eff = r => (r.status==='pending' && Date.now()-new Date(r.created_at).getTime() > 86400000) ? 'expired' : r.status;
+
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),2200); }
+function fmt(ts){ const d=new Date(ts); return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+async function load(){
+  const { data, error } = await sb.rpc('baekjungyeon_admin_list', { p_pass: PASS });
+  if (error) throw error;
+  rows = data || [];
+}
+
+function renderSum(){
+  const box=$('#sum'); box.innerHTML='';
+  Object.keys(DL).forEach(d=>{
+    const r=rows.filter(x=>x.event_date===d);
+    const p=r.filter(x=>eff(x)==='pending').length,
+          c=r.filter(x=>eff(x)==='confirmed').length,
+          e=r.filter(x=>eff(x)==='expired').length,
+          x=r.filter(x=>eff(x)==='cancelled').length,
+          rem=CONFIG.CAPACITY-(p+c);
+    const el=document.createElement('div'); el.className='sumcard';
+    el.innerHTML='<b>'+DL[d]+'</b><div class="nums">확정 '+c+' · 입금대기 '+p+' · 기한경과 '+e+' · 취소 '+x+
+      '<br><span class="rem'+(rem<=0?' full':'')+'">'+(rem<=0?'마감':'잔여 '+rem+'팀')+'</span></div>';
+    box.appendChild(el);
+  });
+}
+
+function renderTable(){
+  const tb=$('#tb'); tb.innerHTML='';
+  const list=rows.filter(r=>(fD==='all'||r.event_date===fD)&&(fS==='all'||eff(r)===fS));
+  if(!list.length){ tb.innerHTML='<tr><td colspan="10" class="empty">해당 조건의 신청이 없습니다.</td></tr>'; return; }
+  list.forEach(r=>{
+    const st=eff(r); const tr=document.createElement('tr'); tr.className='st-'+st;
+    tr.innerHTML=
+      '<td>'+fmt(r.created_at)+'</td>'+
+      '<td>'+DL[r.event_date]+'</td>'+
+      '<td class="nm">'+r.name+'</td>'+
+      '<td><a class="tel" href="tel:'+r.phone+'">'+r.phone+'</a></td>'+
+      '<td>'+r.party_size+'명</td>'+
+      '<td>'+(r.car_no||'—')+'</td>'+
+      '<td>'+(r.agreed?'✔':'—')+'</td>'+
+      '<td><span class="st '+st+'">'+SL[st]+(st==='expired'?'<br><small>입금 오면 확정 가능</small>':'')+'</span></td>'+
+      '<td><div class="btns">'+
+        '<button class="b-ok" data-a="confirmed" '+(r.status==='confirmed'?'disabled':'')+'>입금확정</button>'+
+        '<button class="b-cx" data-a="cancelled" '+(r.status==='cancelled'?'disabled':'')+'>취소</button>'+
+        '<button data-a="pending" '+(r.status==='pending'?'disabled':'')+'>대기로</button>'+
+      '</div></td>'+
+      '<td class="memo"><input value="'+(r.memo||'').replace(/"/g,'&quot;')+'" placeholder="메모"></td>';
+    tr.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>setStatus(r,b.dataset.a)));
+    const mi=tr.querySelector('.memo input');
+    mi.addEventListener('change',()=>saveMemo(r, mi.value));
+    tb.appendChild(tr);
+  });
+}
+
+async function setStatus(r, st){
+  if(st==='cancelled' && !confirm(r.name+' ('+DL[r.event_date]+', '+r.party_size+'명) 팀을 취소할까요?\n환불이 필요한 경우 규정(5일 전 100% / 4~3일 80% / 2~1일 70% / 당일 10%)에 따라 별도 송금하세요.')) return;
+  if(st==='confirmed' && !confirm(r.name+' 팀 입금을 확인했고 확정 처리할까요?')) return;
+  try{
+    const { error } = await sb.rpc('baekjungyeon_admin_update', { p_pass: PASS, p_id: r.id, p_status: st, p_memo: null });
+    if(error) throw error;
+    toast(SL[st]+' 처리 완료'); await refresh();
+  }catch(e){ console.error(e); toast((e.message||'').includes('FULL') ? '정원 초과 — 해당 날짜 유효 신청이 이미 8팀입니다' : '처리 실패 — 새로고침 후 다시 시도'); }
+}
+async function saveMemo(r, memo){
+  try{
+    const { error } = await sb.rpc('baekjungyeon_admin_update', { p_pass: PASS, p_id: r.id, p_status: null, p_memo: memo });
+    if(error) throw error; toast('메모 저장');
+  }catch(e){ toast('메모 저장 실패'); }
+}
+
+function csv(){
+  const head=['신청시각','날짜','대표자','연락처','인원','차량','동의','상태','메모'];
+  const lines=[head.join(',')].concat(rows.map(r=>[
+    new Date(r.created_at).toLocaleString('ko-KR'), DL[r.event_date], r.name, r.phone,
+    r.party_size, r.car_no||'', r.agreed?'동의':'', SL[eff(r)], (r.memo||'').replace(/[,\n]/g,' ')
+  ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')));
+  const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='백중연_예약_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
+async function refresh(){ await load(); renderSum(); renderTable(); }
+
+async function tryEnter(pw){
+  PASS = pw;
+  try{
+    await load();
+    sessionStorage.setItem('by_pass', PASS);
+    $('#gate').style.display='none'; $('#app').style.display='block';
+    renderSum(); renderTable();
+    setInterval(()=>refresh().catch(()=>{}), 60000);
+  }catch(e){
+    sessionStorage.removeItem('by_pass');
+    $('#gateErr').textContent = (e.message||'').includes('DENIED') ? '암호가 틀렸습니다.' : '접속 실패 — setup.sql의 관리자 함수가 실행되었는지 확인하세요.';
+    throw e;
+  }
+}
+
+$('#enter').addEventListener('click', ()=>tryEnter($('#pw').value.trim()).catch(()=>{}));
+$('#pw').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#enter').click(); });
+document.querySelectorAll('.bar [data-d]').forEach(b=>b.addEventListener('click',()=>{
+  fD=b.dataset.d; document.querySelectorAll('.bar [data-d]').forEach(x=>x.setAttribute('aria-pressed',x===b)); renderTable();
+}));
+document.querySelectorAll('.bar [data-s]').forEach(b=>b.addEventListener('click',()=>{
+  fS=b.dataset.s; document.querySelectorAll('.bar [data-s]').forEach(x=>x.setAttribute('aria-pressed',x===b)); renderTable();
+}));
+$('#csv').addEventListener('click', csv);
+$('#reload').addEventListener('click', ()=>refresh().then(()=>toast('갱신 완료')).catch(()=>toast('갱신 실패')));
+
+if (PASS) tryEnter(PASS).catch(()=>{ $('#gate').style.display='block'; $('#app').style.display='none'; });
+</script>
+</body>
+</html>
