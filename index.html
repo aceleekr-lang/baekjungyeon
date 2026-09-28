@@ -19,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%}
-body{margin:0; background:var(--ink); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.08rem; line-height:1.9; word-break:keep-all; overflow:hidden}
+body{margin:0; background:var(--ink); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.08rem; line-height:1.9; word-break:keep-all; overflow-wrap:anywhere; text-wrap:pretty; word-break:keep-all; overflow:hidden}
 img{max-width:100%; display:block}
 a{color:var(--brown)} a:hover{color:var(--deep)}
 button{font-family:inherit}
@@ -85,8 +85,8 @@ h2.ptitle::after{content:""; display:block; width:84px; height:14px; margin-top:
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
 
 /* ── 이야기 ── */
-.lead{font-size:1.4rem; line-height:2.2}
-.lead .brush{font-size:1.85rem; color:var(--brown)}
+.lead{font-size:1.4rem; line-height:2}
+.lead .brush{line-height:1; vertical-align:-.08em; font-size:1.85rem; color:var(--brown)}
 .story p{margin:26px 0 0; font-size:1.12rem}
 .vseal{position:absolute; right:24px; bottom:calc(var(--navh) + 40px); writing-mode:vertical-rl; letter-spacing:10px; font-size:.92rem; color:var(--brown); opacity:.75}
 
@@ -114,6 +114,9 @@ ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
 .tl{list-style:none; margin:0; padding:0}
 .tl li{display:flex; gap:20px; padding:17px 2px; font-size:1.08rem; border-bottom:1px dashed rgba(34,28,21,.28)}
 .tl .t{flex:0 0 82px; font-weight:700; color:var(--brown)}
+.tl li span:last-child{flex:1}
+h1,h2,h3,.tl li span:last-child,.lab b,.lab span,.incl li,.ccard h3,.ccard .sub,.badge,.price-line .per,.cover .place,.cover .date,summary,form label,.datebtn,.agree span,.paybox,.small{text-wrap:balance}
+p,.detail p,.a,.drop,.story p,.lead{text-wrap:pretty}
 
 /* ── 이미지 버튼 ── */
 .btnstack{display:flex; flex-direction:column; gap:20px}
@@ -126,7 +129,12 @@ ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
 .imgbtn:hover .veil{background:linear-gradient(to top, rgba(138,90,51,.72), rgba(34,28,21,.05) 55%)}
 
 /* ── 예약 ── */
-.reserve{background:#EAE0C8}
+.sheet{position:fixed; inset:0; z-index:20; background:#EAE0C8; overflow-y:auto; -webkit-overflow-scrolling:touch}
+.sheet[hidden]{display:none}
+.sheet .in{max-width:640px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 64px) 26px calc(env(safe-area-inset-bottom,0px) + 40px); position:relative; z-index:1}
+.sheet-close{position:fixed; top:calc(env(safe-area-inset-top,0px) + 14px); right:16px; z-index:2; background:var(--ink); color:var(--paper); border:none; padding:9px 14px; font-size:.95rem; letter-spacing:1px; cursor:pointer; font-family:inherit}
+.sheet .waterm{position:fixed; bottom:5%}
+.pager .book-btn{background:var(--seal); color:var(--paper); border:none; padding:8px 14px; font-size:.95rem; letter-spacing:1px; cursor:pointer; font-family:inherit; margin-right:10px}
 .datepick{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0 4px}
 .datebtn{border:1.5px solid var(--ink); background:#fff; padding:15px 8px; text-align:center; font-size:1.1rem; cursor:pointer}
 .datebtn .rem{display:block; font-size:.92rem; margin-top:4px; color:var(--brown)}
@@ -243,7 +251,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
       <h2 class="ptitle">백중연의 밤은 이렇게 흐릅니다</h2>
       <ul class="tl">
         <li><span class="t">낮 10–17시</span><span>모든 체험 우선 이용 · 고택 포토존 가족사진 촬영(무료)</span></li>
-        <li><span class="t">17:30</span><span>전용 주차 후 입장 — 마을에 여덟 팀만 남습니다</span></li>
+        <li><span class="t">17:30</span><span>고택 입장 — 마을에 여덟 팀만 남습니다 (전용 주차장은 아침 9:30부터 이용 가능)</span></li>
         <li><span class="t">18:00</span><span>잔치 한 상 — 설야멱 시연과 함께</span></li>
         <li><span class="t">19:00</span><span>고택 마당의 판소리 · 국악연주</span></li>
         <li><span class="t">20:00</span><span>잔치를 마칩니다</span></li>
@@ -270,7 +278,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
           <div class="lab"><b>아이의 하루 완성</b><span>체험 전부 포함 · 조선 캐릭터와 한바탕 · 누르면 자세히</span></div>
         </button>
         <div class="drop" id="d-day">낮 축제의 체험부스(만들기·전통놀이), 전통 장 만들기, 백중 춤사위 배우기, 그리고 골목마다 상주하는 조선 캐릭터 — 관상가·포졸·사또·추노꾼 — 와의 한바탕까지 전부 포함. 참가팀 확인 후 줄 서지 않고 우선 이용합니다. 퍼레이드 11:00·16:00, 백중놀이 공연 13:00. ※ 일정은 변경될 수 있습니다.</div>
-        <button class="imgbtn" data-goto="6">
+        <button class="imgbtn" data-open="reserve">
           <div class="ph" data-file="img/night.jpg"><img src="img/night.jpg" alt="" onerror="this.remove()"></div>
           <div class="veil"></div>
           <div class="lab"><b>하루 8팀의 밤 — 예약 신청</b><span>계좌 입금 순 선착순 확정</span></div>
@@ -279,9 +287,50 @@ nav.pager button:disabled{opacity:.25; cursor:default}
     </div>
   </section>
 
-  <!-- 7 예약 -->
-  <section class="page reserve" data-name="예약 신청">
-    <span class="pgno">六</span><span class="waterm" aria-hidden="true">約</span>
+  <!-- 8 안내 -->
+  <section class="page" data-name="환불 · 문답">
+    <span class="pgno">六</span><span class="waterm" aria-hidden="true">問</span>
+    <div class="in top">
+      <h2 class="ptitle">취소 · 환불과 자주 묻는 질문</h2>
+      <table class="refund">
+        <tr><th>취소 시점 (참가일 기준)</th><th class="r">환불</th></tr>
+        <tr><td>참가일 5일 전까지</td><td class="r">전액</td></tr>
+        <tr><td>4일 전 ~ 3일 전</td><td class="r">80%</td></tr>
+        <tr><td>2일 전 ~ 1일 전</td><td class="r">70%</td></tr>
+        <tr><td>당일 (행사 시작 전)</td><td class="r">10%</td></tr>
+        <tr><td>입금 후 24시간 이내 취소 (참가일 3일 전까지는 위 규정과 무관하게)</td><td class="r">전액</td></tr>
+        <tr><td>연락 없는 불참(노쇼)</td><td class="r">환불 불가</td></tr>
+        <tr><td>기상 악화 등 주최 측 사유 취소</td><td class="r">전액</td></tr>
+      </table>
+      <details><summary>비가 오면 어떻게 되나요?</summary><div class="a">가랑비에는 고택 처마와 차양 아래에서 그대로 진행합니다. 호우·강풍 등으로 진행이 어려우면 <b>당일 오전 11시까지</b> 진행 여부를 결정해 확정 문자 번호로 안내드리며, 주최 측 취소 시 전액 환불합니다.</div></details>
+      <details><summary>6명이 넘으면요? 아이도 인원에 포함되나요?</summary><div class="a">한 팀 최대 6명, 좌석·식사가 준비되는 모든 인원(아이 포함) 기준입니다. 7명 이상은 두 팀으로 신청해 주세요.</div></details>
+      <details><summary>아이가 먹을 만한 게 있나요?</summary><div class="a">따로 차리지 않고 한 상에서 함께 먹습니다 — 나물·전·산적·떡·과편 등 맵지 않은 구성이 중심이고, 고추장은 따로 내며 아이에게는 식혜를 드립니다. 화로·시연대는 안전 거리를 둡니다.</div></details>
+      <details><summary>가족사진은 언제 찍나요?</summary><div class="a">참가일 낮 10~17시, 고택 포토존에서. 참가팀 무료, 액자 제작 후 택배 발송. (일반 방문팀은 팀당 200,000원)</div></details>
+      <details><summary>낮 체험은 어떻게 이용하나요?</summary><div class="a">참가팀 확인 후 10여 가지 무료·유료 체험을 전부 비용 없이 우선 입장으로 이용합니다.</div></details>
+      <details><summary>주차는 어디에 하나요?</summary><div class="a">참가팀 전용 주차공간이 마련되며, 일찍 오셔도 아침 9시 30분부터 이용할 수 있습니다. 신청 시 적어주신 차량번호로 안내하고, 위치는 확정 문자로 알려드립니다.</div></details>
+      <details><summary>취소는 어떻게 하나요?</summary><div class="a">문의 전화(055-359-4562, 평일 09:00–18:00)로 대표자 이름과 참가 날짜를 알려주시면 접수되고, 환불액은 위 규정에 따라 입금 계좌로 돌려드립니다. 주말·야간에는 같은 번호로 문자를 남겨주시면 접수 시각 기준으로 처리합니다.</div></details>
+      <details><summary>술이 나오는데 운전은요?</summary><div class="a">막걸리는 성인에게만 드리며, 운전하시는 분께는 오미자 냉차·식혜를 대신 올립니다. 팀 안에서 운전자를 정해 오시거나 대리운전을 이용해 주세요.</div></details>
+      <details><summary>확정은 언제 되나요?</summary><div class="a">입금 확인 순으로 확정 문자를 보내드립니다. 신청 후 24시간 내 미입금 시 신청은 자동으로 효력을 잃고, 그 자리는 다음 분께 열립니다.</div></details>
+    </div>
+  </section>
+
+  <!-- 9 뒤표지 -->
+  <section class="page back" data-name="뒤표지">
+    <span class="pgno" style="color:var(--tan)">七</span><div class="ornwin tan" aria-hidden="true"></div>
+    <div class="in">
+      <p class="brush">백중연</p>
+      <p style="letter-spacing:4px; margin:4px 0 40px; opacity:.9">맛과 풍류가 머무는 밤</p>
+      <div class="orgs">주최 · 주관 &nbsp;밀양문화관광재단<br>후원 &nbsp;경상남도 · 밀양시 · 경남문화예술진흥원</div>
+      <p style="opacity:.85; font-size:.9rem; margin-top:26px">문의 055-359-4562 (평일 09:00–18:00)</p>
+      <button class="cta" data-open="reserve">예약 신청하기</button>
+    </div>
+  </section>
+
+</main>
+
+  <!-- 예약 시트 (예약하기 버튼으로 열림) -->
+  <section class="sheet reserve" id="reserveSheet" role="dialog" aria-modal="true" aria-label="예약 신청" hidden>
+    <button class="sheet-close" id="sheetClose" aria-label="닫기">✕ 닫기</button><span class="waterm" aria-hidden="true">約</span>
     <div class="in top">
       <h2 class="ptitle">예약 신청</h2>
       <p class="small" style="margin:-16px 0 6px">계좌 입금 순 선착순 · 하루 8팀 · <b>신청 후 24시간 이내 입금</b>하면 입금 확인 순으로 확정 문자를 보내드립니다. 24시간 내 미입금 시 자리는 자동으로 다음 분께 열립니다. <b>접수 마감: 참가일 3일 전 자정</b> (10.10 팀 → 10.7 / 10.11 팀 → 10.8).</p>
@@ -302,7 +351,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
         <input type="text" id="f-car" name="car_no" maxlength="12" placeholder="예: 123가4567">
         <div class="hp" aria-hidden="true"><label>회사명<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
         <label class="agree"><input type="checkbox" id="f-agree" required>
-          <span>개인정보(이름·연락처·차량번호)를 예약 확인과 행사 안내 목적에 한해 수집·이용하며, 행사 종료 및 환불·정산 완료 후 지체 없이(최장 30일) 파기하는 데 동의합니다. 취소·환불 규정(다음 장)을 확인했습니다.</span></label>
+          <span>개인정보(이름·연락처·차량번호)를 예약 확인과 행사 안내 목적에 한해 수집·이용하며, 행사 종료 및 환불·정산 완료 후 지체 없이(최장 30일) 파기하는 데 동의합니다. 취소·환불 규정(책장의 「환불·문답」)을 확인했습니다.</span></label>
         <button type="submit" class="submit" id="submitBtn">예약 신청하기</button>
         <p class="msg" id="msg" role="status"></p>
       </form>
@@ -313,46 +362,6 @@ nav.pager button:disabled{opacity:.25; cursor:default}
     </div>
   </section>
 
-  <!-- 8 안내 -->
-  <section class="page" data-name="환불 · 문답">
-    <span class="pgno">七</span><span class="waterm" aria-hidden="true">問</span>
-    <div class="in top">
-      <h2 class="ptitle">취소 · 환불과 자주 묻는 질문</h2>
-      <table class="refund">
-        <tr><th>취소 시점 (참가일 기준)</th><th class="r">환불</th></tr>
-        <tr><td>참가일 5일 전까지</td><td class="r">전액</td></tr>
-        <tr><td>4일 전 ~ 3일 전</td><td class="r">80%</td></tr>
-        <tr><td>2일 전 ~ 1일 전</td><td class="r">70%</td></tr>
-        <tr><td>당일 (행사 시작 전)</td><td class="r">10%</td></tr>
-        <tr><td>입금 후 24시간 이내 취소 (참가일 3일 전까지는 위 규정과 무관하게)</td><td class="r">전액</td></tr>
-        <tr><td>연락 없는 불참(노쇼)</td><td class="r">환불 불가</td></tr>
-        <tr><td>기상 악화 등 주최 측 사유 취소</td><td class="r">전액</td></tr>
-      </table>
-      <details><summary>비가 오면 어떻게 되나요?</summary><div class="a">가랑비에는 고택 처마와 차양 아래에서 그대로 진행합니다. 호우·강풍 등으로 진행이 어려우면 <b>당일 오전 11시까지</b> 진행 여부를 결정해 확정 문자 번호로 안내드리며, 주최 측 취소 시 전액 환불합니다.</div></details>
-      <details><summary>6명이 넘으면요? 아이도 인원에 포함되나요?</summary><div class="a">한 팀 최대 6명, 좌석·식사가 준비되는 모든 인원(아이 포함) 기준입니다. 7명 이상은 두 팀으로 신청해 주세요.</div></details>
-      <details><summary>아이가 먹을 만한 게 있나요?</summary><div class="a">따로 차리지 않고 한 상에서 함께 먹습니다 — 나물·전·산적·떡·과편 등 맵지 않은 구성이 중심이고, 고추장은 따로 내며 아이에게는 식혜를 드립니다. 화로·시연대는 안전 거리를 둡니다.</div></details>
-      <details><summary>가족사진은 언제 찍나요?</summary><div class="a">참가일 낮 10~17시, 고택 포토존에서. 참가팀 무료, 액자 제작 후 택배 발송. (일반 방문팀은 팀당 200,000원)</div></details>
-      <details><summary>낮 체험은 어떻게 이용하나요?</summary><div class="a">참가팀 확인 후 10여 가지 무료·유료 체험을 전부 비용 없이 우선 입장으로 이용합니다.</div></details>
-      <details><summary>주차는 어디에 하나요?</summary><div class="a">참가팀 전용 주차공간이 마련됩니다. 신청 시 차량번호로 안내하며 위치는 확정 문자로 알려드립니다.</div></details>
-      <details><summary>취소는 어떻게 하나요?</summary><div class="a">문의 전화(055-359-4562, 평일 09:00–18:00)로 대표자 이름과 참가 날짜를 알려주시면 접수되고, 환불액은 위 규정에 따라 입금 계좌로 돌려드립니다. 주말·야간에는 같은 번호로 문자를 남겨주시면 접수 시각 기준으로 처리합니다.</div></details>
-      <details><summary>술이 나오는데 운전은요?</summary><div class="a">막걸리는 성인에게만 드리며, 운전하시는 분께는 오미자 냉차·식혜를 대신 올립니다. 팀 안에서 운전자를 정해 오시거나 대리운전을 이용해 주세요.</div></details>
-      <details><summary>확정은 언제 되나요?</summary><div class="a">입금 확인 순으로 확정 문자를 보내드립니다. 신청 후 24시간 내 미입금 시 신청은 자동으로 효력을 잃고, 그 자리는 다음 분께 열립니다.</div></details>
-    </div>
-  </section>
-
-  <!-- 9 뒤표지 -->
-  <section class="page back" data-name="뒤표지">
-    <span class="pgno" style="color:var(--tan)">八</span><div class="ornwin tan" aria-hidden="true"></div>
-    <div class="in">
-      <p class="brush">백중연</p>
-      <p style="letter-spacing:4px; margin:4px 0 40px; opacity:.9">맛과 풍류가 머무는 밤</p>
-      <div class="orgs">주최 · 주관 &nbsp;밀양문화관광재단<br>후원 &nbsp;경상남도 · 밀양시 · 경남문화예술진흥원</div>
-      <p style="opacity:.85; font-size:.9rem; margin-top:26px">문의 055-359-4562 (평일 09:00–18:00)</p>
-      <button class="cta" data-goto="6">예약 신청하기</button>
-    </div>
-  </section>
-
-</main>
 
 <nav class="pager" aria-label="페이지 이동">
   <button id="prev" aria-label="이전 장">⟨</button>
@@ -360,6 +369,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
     <div class="name" id="pgname">표지</div>
     <div class="dots" id="dots"></div>
   </div>
+  <button class="book-btn" data-open="reserve">예약하기</button>
   <button id="next" aria-label="다음 장">⟩</button>
 </nav>
 
@@ -395,6 +405,18 @@ const COURSES = [
 
 const $ = (s) => document.querySelector(s);
 
+/* 줄바꿈 보정: 마지막 두 어절을 묶어 짧은 꼬리 줄 방지 (사파리 등 text-wrap 미지원 대비) */
+function tidyWrap(root){
+  (root||document).querySelectorAll('p, li, h1, h2, h3, .sub, .a, .drop, .lab b, .lab span, summary, label, .badge, .rem, .msg').forEach(el=>{
+    if (el.dataset.tidy) return;
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let last=null, n; while ((n=w.nextNode())) if (n.nodeValue.trim()) last=n;
+    if (!last) return;
+    const v=last.nodeValue.replace(/\s+$/,''); const i=v.lastIndexOf(' ');
+    if (i>0 && v.length-i<=6) last.nodeValue = v.slice(0,i)+'\u00A0'+v.slice(i+1)+last.nodeValue.slice(v.length);
+    el.dataset.tidy='1';
+  });
+}
 /* 코스 카드 */
 (function(){
   const box = $('#cards');
@@ -450,6 +472,12 @@ document.querySelectorAll('[data-toggle]').forEach(b=>{
     p.classList.toggle('open', open); b.setAttribute('aria-expanded', open);
   });
 });
+const sheet = $('#reserveSheet');
+function openSheet(){ sheet.hidden = false; sheet.scrollTop = 0; loadCounts(); $('#sheetClose').focus(); }
+function closeSheet(){ sheet.hidden = true; }
+document.querySelectorAll('[data-open="reserve"]').forEach(b=>b.addEventListener('click', openSheet));
+$('#sheetClose').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !sheet.hidden) closeSheet(); });
 document.querySelectorAll('[data-goto]').forEach(b=>{
   b.addEventListener('click', ()=>goTo(Number(b.dataset.goto)));
 });
@@ -557,6 +585,7 @@ $('#rform').addEventListener('submit', async (e) => {
 });
 
 if (CONFIG.ACCOUNT) $('#acct').textContent = CONFIG.ACCOUNT;
+tidyWrap();
 loadCounts();
 setInterval(loadCounts, 60000);
 </script>
