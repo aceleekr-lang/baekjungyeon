@@ -99,7 +99,18 @@ ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
 
 /* ── 코스 카드 ── */
 .cards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-@media(max-width:520px){.cards{grid-template-columns:1fr}}
+@media(max-width:520px){
+  .cards{grid-template-columns:1fr}
+  .vseal{display:none}                                   /* 세로 낙관 — 본문·낙관 번호와 겹쳐 숨김 */
+  .tl li{flex-direction:column; gap:4px; padding:14px 2px}
+  .tl .t{min-width:0}
+  .tl li span:last-child{font-size:1.02rem}
+  ul.incl li{gap:10px; font-size:1rem}
+  ul.incl li .no{flex:0 0 2em}
+  .tl + .small, ul.incl + .small{text-align:center}    /* 균형 두 줄이 된 ※ 문구는 가운데 */
+  .pager .mid .name{font-size:.9rem; letter-spacing:1px}
+  .waterm{font-size:9rem}
+}
 .ccard{border:1px solid rgba(34,28,21,.35); background:#FBF7EC; cursor:pointer; text-align:left; padding:0; display:flex; flex-direction:column}
 .ccard .ph{aspect-ratio:5/3}
 .ccard .head{display:flex; align-items:center; gap:11px; padding:12px 14px 4px}
@@ -134,7 +145,7 @@ p,.detail p,.a,.drop,.story p,.lead{text-wrap:pretty}
 .sheet .in{max-width:640px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 64px) 26px calc(env(safe-area-inset-bottom,0px) + 40px); position:relative; z-index:1}
 .sheet-close{position:fixed; top:calc(env(safe-area-inset-top,0px) + 14px); right:16px; z-index:2; background:var(--ink); color:var(--paper); border:none; padding:9px 14px; font-size:.95rem; letter-spacing:1px; cursor:pointer; font-family:inherit}
 .sheet .waterm{position:fixed; bottom:5%}
-.pager .book-btn{background:var(--seal); color:var(--paper); border:none; padding:8px 14px; font-size:.95rem; letter-spacing:1px; cursor:pointer; font-family:inherit; margin-right:10px}
+nav.pager .book-btn{background:var(--seal); color:var(--paper); border:none; height:auto; align-self:center; padding:10px 16px; line-height:1; font-size:.95rem; letter-spacing:1px; cursor:pointer; font-family:inherit; margin-right:6px; white-space:nowrap}
 .datepick{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0 4px}
 .datebtn{border:1.5px solid var(--ink); background:#fff; padding:15px 8px; text-align:center; font-size:1.1rem; cursor:pointer}
 .datebtn .rem{display:block; font-size:.92rem; margin-top:4px; color:var(--brown)}
@@ -172,8 +183,8 @@ details .a{padding:0 2px 18px; font-size:1.02rem}
 .back .cta{display:inline-block; margin-top:34px; background:var(--paper); color:var(--ink); text-decoration:none; padding:15px 42px; letter-spacing:4px; border:none; font-size:1.05rem; cursor:pointer}
 
 /* ── 하단 넘김 내비 ── */
-nav.pager{position:fixed; left:0; right:0; bottom:0; height:calc(var(--navh) + env(safe-area-inset-bottom,0px)); padding-bottom:env(safe-area-inset-bottom,0px); background:rgba(34,28,21,.92); color:#F6F0E2; display:flex; align-items:center; justify-content:space-between; z-index:10}
-nav.pager button{background:none; border:none; color:#F6F0E2; font-size:1.5rem; padding:0 22px; height:100%; cursor:pointer}
+nav.pager{position:fixed; left:0; right:0; bottom:0; height:calc(var(--navh) + env(safe-area-inset-bottom,0px)); padding-bottom:env(safe-area-inset-bottom,0px); background:var(--ink); color:#F6F0E2; display:flex; align-items:center; justify-content:space-between; z-index:10}
+nav.pager button{background:none; border:none; color:#F6F0E2; font-size:1.5rem; padding:0 16px; height:100%; cursor:pointer}
 nav.pager button:disabled{opacity:.25; cursor:default}
 .pager .mid{flex:1; text-align:center}
 .pager .mid .name{font-size:1rem; letter-spacing:2px}
