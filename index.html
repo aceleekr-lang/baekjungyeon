@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>백중연(宴) — 맛과 풍류가 머무는 밤 | 2026 백중마을 축제</title>
+<meta name="description" content="10월 10~11일 밀양 퇴로고가마을. 하루 8팀만 남는 고택의 밤 — 설야멱과 헛제삿밥 잔치상, 판소리·국악, 가족사진까지. 팀당 20만원, 최대 6명.">
+<meta property="og:title" content="백중연(宴) — 맛과 풍류가 머무는 밤">
+<meta property="og:description" content="하루 8팀 한정, 고택 마당의 잔치. 팀당 200,000원 · 최대 6명 · 낮 체험 전부 포함">
+<meta property="og:image" content="img/hero.jpg">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Brush+Script&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --paper:#F3ECDC; --ink:#221C15; --brown:#8A5A33; --deep:#4A3A28; --tan:#C7B08A;
+  --seal:#9C3B22; --ok:#3E6B45; --bad:#8C2F1D; --navh:64px;
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0; background:var(--ink); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.08rem; line-height:1.9; word-break:keep-all; overflow:hidden}
+img{max-width:100%; display:block}
+a{color:var(--brown)} a:hover{color:var(--deep)}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--brown); outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important} .book{scroll-behavior:auto}}
+
+.brush{font-family:'Nanum Brush Script',cursive; font-weight:400}
+.small{font-size:.95rem; color:var(--deep)}
+
+/* ── 책 구조 ── */
+.book{display:flex; height:100dvh; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none}
+.book::-webkit-scrollbar{display:none}
+.page{flex:0 0 100%; width:100%; height:100dvh; scroll-snap-align:start; scroll-snap-stop:always; overflow-y:auto; background:var(--paper); position:relative; box-shadow:inset -14px 0 26px -18px rgba(34,28,21,.55)}
+.page .in{max-width:640px; margin:0 auto; min-height:100%; padding:calc(env(safe-area-inset-top,0px) + 54px) 26px calc(var(--navh) + env(safe-area-inset-bottom,0px) + 34px); display:flex; flex-direction:column; justify-content:center}
+.page .in.top{justify-content:flex-start}
+.pgno{position:absolute; top:calc(env(safe-area-inset-top,0px) + 30px); right:20px; width:46px; height:46px; border:none; color:var(--seal); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.02rem; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%239C3B22%27%3E%3Cpolygon%20points%3D%2713%2C2%2031%2C2%2042%2C13%2042%2C31%2031%2C42%2013%2C42%202%2C31%202%2C13%27%20stroke-width%3D%272.2%27%2F%3E%3Cpolygon%20points%3D%2715.5%2C6%2028.5%2C6%2038%2C15.5%2038%2C28.5%2028.5%2C38%2015.5%2C38%206%2C28.5%206%2C15.5%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M13%202L6%2015.5M31%202l7.5%2013.5M42%2031l-13.5%207M2%2031l13.5%207%27%20stroke-width%3D%271%27%20opacity%3D%27.4%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat; z-index:2}
+.back .pgno{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23C7B08A%27%3E%3Cpolygon%20points%3D%2713%2C2%2031%2C2%2042%2C13%2042%2C31%2031%2C42%2013%2C42%202%2C31%202%2C13%27%20stroke-width%3D%272.2%27%2F%3E%3Cpolygon%20points%3D%2715.5%2C6%2028.5%2C6%2038%2C15.5%2038%2C28.5%2028.5%2C38%2015.5%2C38%206%2C28.5%206%2C15.5%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M13%202L6%2015.5M31%202l7.5%2013.5M42%2031l-13.5%207M2%2031l13.5%207%27%20stroke-width%3D%271%27%20opacity%3D%27.4%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+h2.ptitle{margin:0 0 38px; font-size:1.75rem; letter-spacing:2px}
+
+
+/* ── 문창살(세살문) 무늬 ── */
+.page > nav.pager::before{content:""; position:absolute; left:0; right:0; top:-1px; height:1px; background:rgba(199,176,138,.5)}
+h2.ptitle::after{content:""; display:block; width:84px; height:14px; margin-top:16px; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2756%27%20height%3D%2716%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%238A5A33%27%20stroke-opacity%3D%27.6%27%20stroke-width%3D%271.6%27%3E%3Cpath%20d%3D%27M0%201h56M0%208h56M0%2015h56%27%2F%3E%3Cpath%20d%3D%27M14%201v7M42%201v7M28%208v7M52%208v7M4%208v7%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") repeat-x 0 0/56px 14px; opacity:.95}
+.cover .frame{position:absolute; inset:14px; border:1px solid rgba(199,176,138,.55); pointer-events:none; z-index:1}
+.cover .frame::before,.cover .frame::after{content:""; position:absolute; width:46px; height:46px; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2746%27%20height%3D%2746%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23C7B08A%27%20stroke-width%3D%272%27%3E%3Cpath%20d%3D%27M2%2046V12h34%27%2F%3E%3Cpath%20d%3D%27M12%2046V22h24%27%20opacity%3D%27.75%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%272%27%20width%3D%2710%27%20height%3D%2710%27%2F%3E%3Crect%20x%3D%2716%27%20y%3D%2712%27%20width%3D%279%27%20height%3D%2710%27%20opacity%3D%27.7%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat}
+.cover .frame::before{top:6px; left:6px; transform:rotate(180deg)}
+.cover .frame::after{bottom:6px; right:6px}
+.cover .frame::before{top:-1px}
+.cover .frame::after{bottom:-1px}
+
+.ornwin{position:absolute; width:min(64vw,400px); aspect-ratio:1; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20240%20240%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%238A5A33%27%20stroke-width%3D%273%27%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27120%27%20r%3D%27114%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27120%27%20r%3D%27104%27%20stroke-width%3D%271.6%27%2F%3E%3Cpolygon%20points%3D%27120%2C34%20181%2C59%20206%2C120%20181%2C181%20120%2C206%2059%2C181%2034%2C120%2059%2C59%27%20stroke-width%3D%271.8%27%2F%3E%3Cpath%20d%3D%27M120%2034v172M34%20120h172%27%20stroke-width%3D%271.6%27%2F%3E%3Cpath%20d%3D%27M59%2059l122%20122M181%2059L59%20181%27%20stroke-width%3D%271.2%27%20opacity%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M104%20104h32v32h-32z%20M96%20120h-14M158%20120h-14M120%2096V82M120%20158v-14%27%20stroke-width%3D%271.8%27%2F%3E%3Cpath%20d%3D%27M104%20104q8-10%2016%200q8-10%2016%200M104%20136q8%2010%2016%200q8%2010%2016%200%27%20stroke-width%3D%271.4%27%20opacity%3D%27.85%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat; opacity:.08; pointer-events:none; z-index:0; right:-20%; bottom:calc(var(--navh) - 4%)}
+.ornwin.tan{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20240%20240%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23C7B08A%27%20stroke-width%3D%273%27%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27120%27%20r%3D%27114%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27120%27%20r%3D%27104%27%20stroke-width%3D%271.6%27%2F%3E%3Cpolygon%20points%3D%27120%2C34%20181%2C59%20206%2C120%20181%2C181%20120%2C206%2059%2C181%2034%2C120%2059%2C59%27%20stroke-width%3D%271.8%27%2F%3E%3Cpath%20d%3D%27M120%2034v172M34%20120h172%27%20stroke-width%3D%271.6%27%2F%3E%3Cpath%20d%3D%27M59%2059l122%20122M181%2059L59%20181%27%20stroke-width%3D%271.2%27%20opacity%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M104%20104h32v32h-32z%20M96%20120h-14M158%20120h-14M120%2096V82M120%20158v-14%27%20stroke-width%3D%271.8%27%2F%3E%3Cpath%20d%3D%27M104%20104q8-10%2016%200q8-10%2016%200M104%20136q8%2010%2016%200q8%2010%2016%200%27%20stroke-width%3D%271.4%27%20opacity%3D%27.85%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); opacity:.16}
+.cover .ornwin{opacity:.14; right:auto; left:-16%; top:-7%; bottom:auto}
+/* 수묵 한자 배경 — 여백을 은은하게 */
+.waterm{position:absolute; left:5%; bottom:calc(var(--navh) + 5%); font-size:12rem; line-height:1; color:rgba(138,90,51,.07); pointer-events:none; user-select:none; font-weight:700; z-index:0}
+.page .in{position:relative; z-index:1}
+
+/* 이미지 슬롯 */
+.ph{position:relative; overflow:hidden; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%238A5A33%27%20stroke-opacity%3D%27.45%27%3E%3Cpolygon%20points%3D%2713%2C2%2031%2C2%2042%2C13%2042%2C31%2031%2C42%2013%2C42%202%2C31%202%2C13%27%20stroke-width%3D%272%27%2F%3E%3Cpolygon%20points%3D%2715.5%2C6%2028.5%2C6%2038%2C15.5%2038%2C28.5%2028.5%2C38%2015.5%2C38%206%2C28.5%206%2C15.5%27%20stroke-width%3D%271%27%20opacity%3D%27.6%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/64px no-repeat, linear-gradient(#EFE6D2,#E9DFC8)}
+.ph::before{content:"이미지 준비 중"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--deep); font-size:.95rem; letter-spacing:5px; opacity:.7}
+.ph::after{content:attr(data-file); position:absolute; right:10px; bottom:7px; font-size:.68rem; color:var(--deep); opacity:.5; letter-spacing:1px}
+.ph img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+
+/* ── 표지 ── */
+.cover{background:var(--ink)}
+.cover .ph{position:absolute; inset:0}
+.cover .veil{position:absolute; inset:0; background:linear-gradient(to bottom, rgba(243,236,220,.16), rgba(34,28,21,.72) 78%)}
+.cover .in{position:relative; color:#F6F0E2; justify-content:flex-end; padding-bottom:calc(var(--navh) + env(safe-area-inset-bottom,0px) + 56px)}
+.cover .vtext{position:absolute; top:calc(env(safe-area-inset-top,0px) + 40px); right:28px; writing-mode:vertical-rl; letter-spacing:13px; font-size:1rem; text-shadow:0 1px 8px rgba(34,28,21,.55)}
+.cover h1{margin:0; font-size:clamp(4.4rem,18vw,6.8rem); line-height:1; text-shadow:0 2px 16px rgba(34,28,21,.5)}
+.cover h1 .yeon{display:inline-block; font-family:'Gowun Batang',serif; font-size:.3em; border:2px solid var(--tan); color:var(--tan); border-radius:50%; width:2.1em; height:2.1em; line-height:2.05em; text-align:center; vertical-align:.55em; margin-left:.18em; text-shadow:none}
+.cover .date{margin:20px 0 2px; font-size:1.32rem; font-weight:700}
+.cover .place{font-size:1.04rem; opacity:.92}
+.badges{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap}
+.badge{border:1.2px solid rgba(246,240,226,.85); padding:7px 15px; font-size:.98rem}
+.badge b{color:#EFD9A7}
+.badge.full{color:#E8B3A4}
+.swipehint{margin-top:32px; font-size:1.02rem; letter-spacing:3px; opacity:.85; animation:nudge 2.2s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+
+/* ── 이야기 ── */
+.lead{font-size:1.4rem; line-height:2.2}
+.lead .brush{font-size:1.85rem; color:var(--brown)}
+.story p{margin:26px 0 0; font-size:1.12rem}
+.vseal{position:absolute; right:24px; bottom:calc(var(--navh) + 40px); writing-mode:vertical-rl; letter-spacing:10px; font-size:.92rem; color:var(--brown); opacity:.75}
+
+/* ── 포함 ── */
+.price-line .num{font-size:2.4rem; font-weight:700; display:block}
+.price-line .per{font-size:1.08rem; color:var(--deep)}
+ul.incl{list-style:none; padding:0; margin:26px 0 0; border-top:1.5px solid var(--ink)}
+ul.incl li{padding:12px 2px; border-bottom:1px solid rgba(34,28,21,.18); display:flex; gap:12px; align-items:baseline; font-size:1.06rem}
+ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
+
+/* ── 코스 카드 ── */
+.cards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media(max-width:520px){.cards{grid-template-columns:1fr}}
+.ccard{border:1px solid rgba(34,28,21,.35); background:#FBF7EC; cursor:pointer; text-align:left; padding:0; display:flex; flex-direction:column}
+.ccard .ph{aspect-ratio:5/3}
+.ccard .head{display:flex; align-items:center; gap:11px; padding:12px 14px 4px}
+.ccard .cn{flex:0 0 30px; width:30px; height:30px; border:1.5px solid var(--seal); color:var(--seal); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.92rem}
+.ccard h3{margin:0; font-size:1.14rem}
+.ccard .sub{padding:0 14px 12px 55px; font-size:.9rem; color:var(--deep)}
+.ccard .detail{max-height:0; overflow:hidden; transition:max-height .35s ease; padding:0 14px}
+.ccard[aria-expanded="true"] .detail{max-height:300px; padding-bottom:16px}
+.ccard .detail p{margin:0; font-size:1.02rem; border-top:1px dashed rgba(34,28,21,.3); padding-top:12px}
+
+/* ── 타임라인 ── */
+.tl{list-style:none; margin:0; padding:0}
+.tl li{display:flex; gap:20px; padding:17px 2px; font-size:1.08rem; border-bottom:1px dashed rgba(34,28,21,.28)}
+.tl .t{flex:0 0 82px; font-weight:700; color:var(--brown)}
+
+/* ── 이미지 버튼 ── */
+.btnstack{display:flex; flex-direction:column; gap:20px}
+.imgbtn{position:relative; display:block; border:none; padding:0; cursor:pointer; color:#F6F0E2; text-align:left; width:100%}
+.imgbtn .ph{aspect-ratio:16/8}
+.imgbtn .veil{position:absolute; inset:0; background:linear-gradient(to top, rgba(34,28,21,.68), rgba(34,28,21,.05) 55%)}
+.imgbtn .lab{position:absolute; left:18px; bottom:14px; right:18px}
+.imgbtn .lab b{font-size:1.25rem; letter-spacing:1.5px; display:block}
+.imgbtn .lab span{font-size:.92rem; opacity:.9}
+.imgbtn:hover .veil{background:linear-gradient(to top, rgba(138,90,51,.72), rgba(34,28,21,.05) 55%)}
+
+/* ── 예약 ── */
+.reserve{background:#EAE0C8}
+.datepick{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0 4px}
+.datebtn{border:1.5px solid var(--ink); background:#fff; padding:15px 8px; text-align:center; font-size:1.1rem; cursor:pointer}
+.datebtn .rem{display:block; font-size:.92rem; margin-top:4px; color:var(--brown)}
+.datebtn[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
+.datebtn[aria-pressed="true"] .rem{color:var(--tan)}
+.datebtn:disabled{opacity:.45; cursor:not-allowed; text-decoration:line-through}
+form label{display:block; margin-top:18px; font-weight:700; font-size:1.05rem}
+form input[type=text],form input[type=tel],form select{width:100%; padding:13px; font-size:1.08rem; font-family:inherit; border:1.4px solid var(--ink); background:#fff; margin-top:7px}
+.agree{display:flex; gap:10px; align-items:flex-start; margin-top:20px; font-weight:400; font-size:.98rem}
+.agree input{width:20px; height:20px; margin-top:4px}
+.submit{width:100%; margin-top:22px; padding:16px; font-size:1.08rem; letter-spacing:3px; background:var(--ink); color:var(--paper); border:none; cursor:pointer}
+.submit:hover{background:var(--brown)}
+.submit:disabled{opacity:.5; cursor:not-allowed}
+.msg{margin-top:14px; padding:13px; font-size:.93rem; display:none; border:1.4px solid}
+.msg.ok{display:block; border-color:var(--ok); color:var(--ok); background:#fff}
+.msg.err{display:block; border-color:var(--bad); color:var(--bad); background:#fff}
+.paybox{margin-top:22px; border:1.4px dashed var(--ink); padding:17px; background:#fff; font-size:1rem}
+.hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
+
+/* ── 안내 ── */
+table.refund{width:100%; border-collapse:collapse; margin:0 0 32px; font-size:.98rem}
+table.refund th,table.refund td{border:1px solid var(--ink); padding:9px 8px; text-align:left}
+table.refund th{background:#EAE0C8}
+table.refund td.r{text-align:right; white-space:nowrap}
+details{border-bottom:1px solid rgba(34,28,21,.25)}
+details summary{padding:16px 2px; cursor:pointer; font-weight:700; list-style:none; font-size:1.08rem}
+details summary::after{content:"＋"; float:right; color:var(--brown)}
+details[open] summary::after{content:"－"}
+details .a{padding:0 2px 18px; font-size:1.02rem}
+
+/* ── 뒤표지 ── */
+.back{background:var(--ink); color:#F6F0E2; text-align:center}
+.back .orgs{letter-spacing:1px; line-height:2.3; font-size:1.06rem}
+.back .brush{font-size:3.4rem; color:var(--tan)}
+.back .cta{display:inline-block; margin-top:34px; background:var(--paper); color:var(--ink); text-decoration:none; padding:15px 42px; letter-spacing:4px; border:none; font-size:1.05rem; cursor:pointer}
+
+/* ── 하단 넘김 내비 ── */
+nav.pager{position:fixed; left:0; right:0; bottom:0; height:calc(var(--navh) + env(safe-area-inset-bottom,0px)); padding-bottom:env(safe-area-inset-bottom,0px); background:rgba(34,28,21,.92); color:#F6F0E2; display:flex; align-items:center; justify-content:space-between; z-index:10}
+nav.pager button{background:none; border:none; color:#F6F0E2; font-size:1.5rem; padding:0 22px; height:100%; cursor:pointer}
+nav.pager button:disabled{opacity:.25; cursor:default}
+.pager .mid{flex:1; text-align:center}
+.pager .mid .name{font-size:1rem; letter-spacing:2px}
+.pager .dots{display:flex; gap:7px; justify-content:center; margin-top:5px}
+.pager .dots i{width:6px; height:6px; border-radius:50%; background:rgba(246,240,226,.35)}
+.pager .dots i.on{background:var(--tan)}
+</style>
+</head>
+<body>
+
+<main class="book" id="book" aria-label="백중연 안내 책자">
+
+  <!-- 1 표지 -->
+  <section class="page cover" data-name="표지">
+    <div class="ph" data-file="img/hero.jpg"><img src="img/hero.jpg" alt="" onerror="this.remove()"></div>
+    <div class="veil"></div>
+    <div class="frame" aria-hidden="true"></div>
+    <div class="ornwin tan" aria-hidden="true"></div>
+    <p class="vtext brush">맛과 풍류가 머무는 밤</p>
+    <div class="in">
+      <p style="letter-spacing:5px; font-size:.9rem; margin:0 0 6px">2026 백중마을 축제 · 유료 특별 프로그램</p>
+      <h1 class="brush">백중연<span class="yeon">宴</span></h1>
+      <p class="date">2026. 10. 10.(토) — 10. 11.(일) 저녁</p>
+      <p class="place">밀양 퇴로고가마을 고택 마당 · 17:30 입장, 21:00까지</p>
+      <div class="badges" id="badges" aria-live="polite">
+        <span class="badge">10.10(토) 잔여 <b>—</b></span>
+        <span class="badge">10.11(일) 잔여 <b>—</b></span>
+      </div>
+      <p class="swipehint">옆으로 넘겨보세요 ⟶</p>
+    </div>
+  </section>
+
+  <!-- 2 이야기 -->
+  <section class="page story" data-name="단 하루의 잔치">
+    <span class="pgno">一</span><span class="waterm" aria-hidden="true">宴</span><div class="ornwin" aria-hidden="true"></div>
+    <div class="in">
+      <h2 class="ptitle">단 하루, 상이 뒤집히던 날</h2>
+      <p class="lead">음력 칠월 보름 <span class="brush">백중</span>. 한 해 농사에 허리가 굽은 머슴들에게, 이날만큼은 주인집이 상을 차려 올렸습니다. 새 옷 한 벌과 술 한 상, 그리고 온전히 노는 하루.</p>
+      <p>백중연은 그 하루의 상을 오늘의 당신에게 다시 차립니다. 일반 관람이 끝난 오후 다섯 시, 고택 마을에 여덟 팀만 남습니다. 마당에 등이 켜지고, 상이 들어오고, 소리꾼이 부채를 폅니다. 올 한 해 애쓴 당신이 오늘의 상석입니다.</p>
+    </div>
+    <p class="vseal">일 년에 단 하루 · 아랫사람이 상석에</p>
+  </section>
+
+  <!-- 3 포함 -->
+  <section class="page" data-name="이 상에 오르는 것">
+    <span class="pgno">二</span><span class="waterm" aria-hidden="true">床</span>
+    <div class="in">
+      <h2 class="ptitle">이 상에 오르는 것</h2>
+      <p class="price-line"><span class="num">팀당 200,000원</span><span class="per">한 팀 최대 6명 · 4인 가족이면 1인 5만원의 고택 만찬</span></p>
+      <ul class="incl">
+        <li><span class="no">하나</span> 저녁 잔치 한 상 — 설야멱 · 헛제삿밥 제기 상차림 · 밀양 삼전 · 밀양 떡과 후식</li>
+        <li><span class="no">둘</span> 눈앞의 판소리 · 국악연주 — 하루 48석뿐인 무대</li>
+        <li><span class="no">셋</span> 낮 축제의 모든 무료 · 유료 체험 10여 가지 전부</li>
+        <li><span class="no">넷</span> 줄 서지 않는 체험 우선 이용 · 전용 주차공간</li>
+        <li><span class="no">다섯</span> 백중 가족사진 + 액자 (일반 판매가 200,000원 · 참가팀 무료)</li>
+      </ul>
+      <p class="small" style="margin-top:18px">※ 가족사진 한 장 값으로 잔치 전부가 따라옵니다.</p>
+    </div>
+  </section>
+
+  <!-- 4 한 상 -->
+  <section class="page" data-name="저녁 한 상">
+    <span class="pgno">三</span><span class="waterm" aria-hidden="true">味</span>
+    <div class="in top">
+      <h2 class="ptitle">저녁 한 상 — 그날의 잔칫상</h2>
+      <p class="small" style="margin:-16px 0 24px">여섯 식구가 둘러앉는 <b>한 상 통차림</b> — 일곱 가지가 한꺼번에 오릅니다. 전은 깻잎과 고추, 전국 1등이 밀양 밭. 후식은 한천, 국내 최대 산지가 얼음골 사과를 굳혔습니다. <b>상 하나가 밀양 지도입니다.</b> 카드를 누르면 이야기가 열립니다.</p>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+
+  <!-- 5 밤의 흐름 -->
+  <section class="page" data-name="밤의 흐름">
+    <span class="pgno">四</span><span class="waterm" aria-hidden="true">夜</span>
+    <div class="in">
+      <h2 class="ptitle">백중연의 밤은 이렇게 흐릅니다</h2>
+      <ul class="tl">
+        <li><span class="t">낮 10–17시</span><span>모든 체험 우선 이용 · 고택 포토존 가족사진 촬영(무료)</span></li>
+        <li><span class="t">17:30</span><span>전용 주차 후 입장 — 마을에 여덟 팀만 남습니다</span></li>
+        <li><span class="t">18:00</span><span>잔치 한 상 — 설야멱 시연과 함께</span></li>
+        <li><span class="t">19:00</span><span>고택 마당의 판소리 · 국악연주</span></li>
+        <li><span class="t">21:00</span><span>등불 아래 마을 산책 후 잔치를 마칩니다</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 낮부터 밤까지 -->
+  <section class="page" data-name="낮부터 밤까지">
+    <span class="pgno">五</span><span class="waterm" aria-hidden="true">日</span>
+    <div class="in">
+      <h2 class="ptitle">낮부터 밤까지</h2>
+      <div class="btnstack">
+        <button class="imgbtn" data-goto="7">
+          <div class="ph" data-file="img/family.jpg"><img src="img/family.jpg" alt="" onerror="this.remove()"></div>
+          <div class="veil"></div>
+          <div class="lab"><b>남는 것 — 가족사진 액자</b><span>3대가 담장 앞에 · 참가팀 무료, 액자·택배 포함</span></div>
+        </button>
+        <button class="imgbtn" data-goto="7">
+          <div class="ph" data-file="img/day.jpg"><img src="img/day.jpg" alt="" onerror="this.remove()"></div>
+          <div class="veil"></div>
+          <div class="lab"><b>아이의 하루 완성</b><span>체험 전부 포함 · 조선 캐릭터와 한바탕</span></div>
+        </button>
+        <button class="imgbtn" data-goto="6">
+          <div class="ph" data-file="img/night.jpg"><img src="img/night.jpg" alt="" onerror="this.remove()"></div>
+          <div class="veil"></div>
+          <div class="lab"><b>하루 8팀의 밤 — 예약 신청</b><span>계좌 입금 순 선착순 확정</span></div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 예약 -->
+  <section class="page reserve" data-name="예약 신청">
+    <span class="pgno">六</span><span class="waterm" aria-hidden="true">約</span>
+    <div class="in top">
+      <h2 class="ptitle">예약 신청</h2>
+      <p class="small" style="margin:-16px 0 6px">계좌 입금 순 선착순 · 하루 8팀 · 신청 후 안내 문자에 따라 <b>24시간 이내 입금</b> 시 확정. 미입금 시 자동 취소되어 다음 분께 기회가 갑니다.</p>
+      <form id="rform" novalidate>
+        <label>참가 날짜</label>
+        <div class="datepick" id="datepick" role="group" aria-label="참가 날짜 선택"></div>
+        <label for="f-name">대표자 이름</label>
+        <input type="text" id="f-name" name="name" autocomplete="name" maxlength="20" required>
+        <label for="f-phone">연락처 (입금·확정 안내를 받을 번호)</label>
+        <input type="tel" id="f-phone" name="phone" autocomplete="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" required>
+        <label for="f-size">참가 인원 (최대 6명)</label>
+        <select id="f-size" name="party_size" required>
+          <option value="">선택</option>
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option><option>6</option>
+        </select>
+        <label for="f-car">차량번호 (전용 주차 안내용 · 선택)</label>
+        <input type="text" id="f-car" name="car_no" maxlength="12" placeholder="예: 123가4567">
+        <div class="hp" aria-hidden="true"><label>회사명<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
+        <label class="agree"><input type="checkbox" id="f-agree" required>
+          <span>개인정보(이름·연락처·차량번호)를 예약 확인과 행사 안내 목적에 한해 수집·이용하며, 행사 종료 후 파기하는 데 동의합니다. 취소·환불 규정(다음 장)을 확인했습니다.</span></label>
+        <button type="submit" class="submit" id="submitBtn">예약 신청하기</button>
+        <p class="msg" id="msg" role="status"></p>
+      </form>
+      <div class="paybox">
+        <b>입금 계좌</b> — [은행명 000-0000-0000 예금주]<br>
+        <span class="small">입금자명은 대표자 이름과 같게 해주세요.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 안내 -->
+  <section class="page" data-name="환불 · 문답">
+    <span class="pgno">七</span><span class="waterm" aria-hidden="true">問</span>
+    <div class="in top">
+      <h2 class="ptitle">취소 · 환불과 자주 묻는 질문</h2>
+      <table class="refund">
+        <tr><th>취소 시점 (참가일 기준)</th><th class="r">환불</th></tr>
+        <tr><td>참가일 5일 전까지</td><td class="r">전액</td></tr>
+        <tr><td>4일 전 ~ 3일 전</td><td class="r">80%</td></tr>
+        <tr><td>2일 전 ~ 1일 전</td><td class="r">70%</td></tr>
+        <tr><td>당일 (행사 시작 전)</td><td class="r">10%</td></tr>
+        <tr><td>입금 후 24시간 이내 취소 (3일 전까지)</td><td class="r">전액</td></tr>
+        <tr><td>기상 악화 등 주최 측 사유 취소</td><td class="r">전액</td></tr>
+      </table>
+      <details><summary>비가 오면 어떻게 되나요?</summary><div class="a">가랑비에는 고택 처마와 차양 아래에서 진행합니다. 호우·태풍 등으로 주최 측이 진행 불가를 판단하면 전액 환불해 드립니다. [세부 우천 기준 확정 시 갱신]</div></details>
+      <details><summary>6명이 넘으면요? 아이도 인원에 포함되나요?</summary><div class="a">한 팀 최대 6명, 좌석·식사가 준비되는 모든 인원(아이 포함) 기준입니다. 7명 이상은 두 팀으로 신청해 주세요.</div></details>
+      <details><summary>아이가 먹을 만한 게 있나요?</summary><div class="a">따로 차리지 않고 한 상에서 함께 먹습니다 — 나물·전·산적·떡·과편 등 맵지 않은 구성이 중심이고, 고추장은 따로 내며 아이에게는 식혜를 드립니다. 화로·시연대는 안전 거리를 둡니다.</div></details>
+      <details><summary>가족사진은 언제 찍나요?</summary><div class="a">참가일 낮 10~17시, 고택 포토존에서. 참가팀 무료, 액자 제작 후 택배 발송. (일반 방문팀은 팀당 200,000원)</div></details>
+      <details><summary>낮 체험은 어떻게 이용하나요?</summary><div class="a">참가팀 확인 후 10여 가지 무료·유료 체험을 전부 비용 없이 우선 입장으로 이용합니다.</div></details>
+      <details><summary>주차는 어디에 하나요?</summary><div class="a">참가팀 전용 주차공간이 마련됩니다. 신청 시 차량번호로 안내하며 위치는 확정 문자로 알려드립니다.</div></details>
+      <details><summary>확정은 언제 되나요?</summary><div class="a">입금 확인 순으로 확정 문자를 보내드립니다. 신청 후 24시간 내 미입금 시 자동 취소됩니다.</div></details>
+    </div>
+  </section>
+
+  <!-- 9 뒤표지 -->
+  <section class="page back" data-name="뒤표지">
+    <span class="pgno" style="color:var(--tan)">八</span><div class="ornwin tan" aria-hidden="true"></div>
+    <div class="in">
+      <p class="brush">백중연</p>
+      <p style="letter-spacing:4px; margin:4px 0 40px; opacity:.9">맛과 풍류가 머무는 밤</p>
+      <div class="orgs">주최 · 주관 &nbsp;밀양문화관광재단<br>후원 &nbsp;경상남도 · 밀양시 · 경남문화예술진흥원</div>
+      <p style="opacity:.85; font-size:.9rem; margin-top:26px">문의 055-359-4562 (평일 09:00–18:00)</p>
+      <button class="cta" data-goto="6">예약 신청하기</button>
+    </div>
+  </section>
+
+</main>
+
+<nav class="pager" aria-label="페이지 이동">
+  <button id="prev" aria-label="이전 장">⟨</button>
+  <div class="mid">
+    <div class="name" id="pgname">표지</div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <button id="next" aria-label="다음 장">⟩</button>
+</nav>
+
+<script>
+const CONFIG = {
+  SUPABASE_URL: 'https://snaldhxucwsaifqrccih.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYWxkaHh1Y3dzYWlmcXJjY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzIwNjAsImV4cCI6MjEwMzg0ODA2MH0.TUdhun_cBHsool0e2FZOOfznjFoC_u5B0MJCl1dTDhI',
+  CAPACITY: 8,
+  DATES: [
+    { v: '2026-10-10', label: '10. 10. (토)' },
+    { v: '2026-10-11', label: '10. 11. (일)' }
+  ]
+};
+
+const COURSES = [
+  { cn:'一', img:'makgeolli.jpg', t:'술과 차 — 막걸리와 오미자 냉차', s:'백중날 주인이 내리던 술',
+    d:'밀양 막걸리 한 주전자로 잔치를 열고, 물 대신 차게 우린 오미자차가 상 위에 늘 함께합니다. 아이와 비음주자에게는 식혜를.' },
+  { cn:'二', img:'samjeon.jpg', t:'밀양 삼전 三煎', s:'들깻잎전 · 풋고추전 · 배추전',
+    d:'전 세 가지가 전부 밀양 밭에서 — 전국 최대 산지의 들깻잎전, 고추 1등 고장의 풋고추전, 그리고 잔치의 배추전.' },
+  { cn:'三', img:'sanjeok.jpg', t:'표고산적과 밀양강 은어구이', s:'산과 강이 한 상에서',
+    d:'산내 참나무 표고로 만든 표고산적에, 밀양강에서 올라온 은어구이를 나란히 — 산의 맛과 강의 맛이 한 상에서 만납니다.' },
+  { cn:'四', img:'seolyamyeok.jpg', t:'설야멱 雪夜覓', s:'눈에 식혀 다시 굽기 세 번',
+    d:'숯불의 고기를 눈에 묻혀 식혔다 다시 굽기를 거듭하면 겉은 불맛, 속은 눈처럼 부드럽습니다. 마지막은 밀양 들깻잎 한 장에 싸서, 풋고추와 쌈장을 곁들여.' },
+  { cn:'五', img:'heotjesatbap.jpg', t:'헛제삿밥 — 제기 상차림', s:'높이 올린 상, 간장 비빔',
+    d:'굽 높은 목제기와 놋그릇에 밀양 쌀밥과 참나무 표고를 넣은 쇠고기무탕국, 고사리·도라지·시금치·가지·무·콩나물 여섯 가지 나물을 올려 — 간장 또는 고추장, 취향대로 슥슥 비벼 먹습니다.' },
+  { cn:'六', img:'tteok.jpg', t:'밀양의 떡 세 가지', s:'부편 · 쑥꾸리 · 딸기크림 찹쌀떡',
+    d:'괴임의 꼭대기 부편엔 재약산 꿀과 계피 소, 옛 떡 쑥꾸리, 그리고 딸기 시배지 삼랑진에서 착안한 딸기크림 찹쌀떡 — 옛 떡 둘에 오늘의 떡 하나.' },
+  { cn:'七', img:'dessert.jpg', t:'마무리 — 쓴맛 한 점', s:'과편 · 정과 · 한과 · 수정과와 식혜',
+    d:'산내 한천으로 굳힌 얼음골 사과 과편, 단장 생왕대추, 우리밀 약과와 쌀엿, 쌉싸래한 도라지정과 한 점. 어른에겐 수정과, 아이에겐 식혜.' }
+];
+
+const $ = (s) => document.querySelector(s);
+
+/* 코스 카드 */
+(function(){
+  const box = $('#cards');
+  COURSES.forEach((c) => {
+    const b = document.createElement('button');
+    b.type='button'; b.className='ccard'; b.setAttribute('aria-expanded','false');
+    b.innerHTML =
+      '<div class="ph" data-file="img/'+c.img+'"><img src="img/'+c.img+'" alt="" onerror="this.remove()"></div>'+
+      '<div class="head"><span class="cn">'+c.cn+'</span><h3>'+c.t+'</h3></div>'+
+      '<div class="sub">'+c.s+'</div>'+
+      '<div class="detail"><p>'+c.d+'</p></div>';
+    b.addEventListener('click', () => {
+      b.setAttribute('aria-expanded', b.getAttribute('aria-expanded')==='true' ? 'false' : 'true');
+    });
+    box.appendChild(b);
+  });
+})();
+
+/* ── 책장 넘김 ── */
+const book = $('#book');
+const pages = Array.from(book.querySelectorAll('.page'));
+const dotsBox = $('#dots');
+pages.forEach(() => { const i = document.createElement('i'); dotsBox.appendChild(i); });
+const dots = Array.from(dotsBox.children);
+let cur = 0;
+
+function goTo(i){
+  i = Math.max(0, Math.min(pages.length-1, i));
+  book.scrollTo({ left: i * book.clientWidth, behavior: 'smooth' });
+}
+function syncUI(){
+  const i = Math.round(book.scrollLeft / book.clientWidth);
+  if (i === cur) return;
+  cur = i;
+  $('#pgname').textContent = pages[cur].dataset.name;
+  dots.forEach((d,k)=>d.classList.toggle('on', k===cur));
+  $('#prev').disabled = cur===0;
+  $('#next').disabled = cur===pages.length-1;
+}
+book.addEventListener('scroll', () => requestAnimationFrame(syncUI));
+$('#prev').addEventListener('click', ()=>goTo(cur-1));
+$('#next').addEventListener('click', ()=>goTo(cur+1));
+document.addEventListener('keydown', (e)=>{
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA') return;
+  if (e.key==='ArrowRight') goTo(cur+1);
+  if (e.key==='ArrowLeft') goTo(cur-1);
+});
+document.querySelectorAll('[data-goto]').forEach(b=>{
+  b.addEventListener('click', ()=>goTo(Number(b.dataset.goto)));
+});
+dots.forEach((d,k)=>{ d.style.cursor='pointer'; d.addEventListener('click', ()=>goTo(k)); });
+$('#pgname').textContent = pages[0].dataset.name;
+dots[0].classList.add('on');
+$('#prev').disabled = true;
+window.addEventListener('resize', ()=>goTo(cur));
+
+/* ── 예약 (Supabase) ── */
+let sb = null, selectedDate = null, remaining = {};
+if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && window.supabase) {
+  sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+}
+
+function renderDates() {
+  const box = $('#datepick'); box.innerHTML = '';
+  CONFIG.DATES.forEach(d => {
+    const rem = remaining[d.v];
+    const full = rem !== undefined && rem <= 0;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'datebtn'; b.disabled = full;
+    b.setAttribute('aria-pressed', selectedDate === d.v ? 'true' : 'false');
+    b.innerHTML = d.label + '<span class="rem">' +
+      (rem === undefined ? '잔여 확인 중' : (full ? '마감' : '잔여 ' + rem + '팀')) + '</span>';
+    b.addEventListener('click', () => { selectedDate = d.v; renderDates(); });
+    box.appendChild(b);
+  });
+}
+function renderBadges() {
+  const box = $('#badges'); box.innerHTML = '';
+  CONFIG.DATES.forEach(d => {
+    const rem = remaining[d.v];
+    const s = document.createElement('span');
+    const full = rem !== undefined && rem <= 0;
+    s.className = 'badge' + (full ? ' full' : '');
+    s.innerHTML = d.label.replace(/\. /g, '.').replace(/\.$/, '') + ' ' +
+      (rem === undefined ? '잔여 <b>—</b>' : (full ? '<b>마감</b>' : '잔여 <b>' + rem + '팀</b>'));
+    box.appendChild(s);
+  });
+}
+async function loadCounts() {
+  if (!sb) { renderDates(); renderBadges(); return; }
+  try {
+    const { data, error } = await sb.rpc('baekjungyeon_counts');
+    if (error) throw error;
+    CONFIG.DATES.forEach(d => remaining[d.v] = CONFIG.CAPACITY);
+    (data || []).forEach(r => {
+      remaining[r.event_date] = Math.max(0, CONFIG.CAPACITY - Number(r.cnt));
+    });
+  } catch (e) { console.error(e); }
+  renderDates(); renderBadges();
+}
+function show(kind, text) { const m = $('#msg'); m.className = 'msg ' + kind; m.textContent = text; }
+
+$('#f-phone').addEventListener('input', (e) => {
+  let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length > 7) v = v.slice(0, 3) + '-' + v.slice(3, 7) + '-' + v.slice(7);
+  else if (v.length > 3) v = v.slice(0, 3) + '-' + v.slice(3);
+  e.target.value = v;
+});
+
+$('#rform').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = $('#f-name').value.trim();
+  const phone = $('#f-phone').value.trim();
+  const size = $('#f-size').value;
+  const car = $('#f-car').value.trim();
+  const hp = document.querySelector('input[name=company]').value;
+
+  if (hp) return;
+  if (!selectedDate) return show('err', '참가 날짜를 선택해 주세요.');
+  if (!name) return show('err', '대표자 이름을 입력해 주세요.');
+  if (!/^010-\d{4}-\d{4}$/.test(phone)) return show('err', '연락처를 010-0000-0000 형식으로 입력해 주세요.');
+  if (!size) return show('err', '참가 인원을 선택해 주세요.');
+  if (!$('#f-agree').checked) return show('err', '개인정보 수집·이용 및 환불 규정 동의가 필요합니다.');
+  if (!sb) return show('err', '예약 시스템 준비 중입니다. 055-359-4562로 신청해 주세요.');
+
+  const btn = $('#submitBtn'); btn.disabled = true; btn.textContent = '접수 중…';
+  try {
+    const { error } = await sb.from('baekjungyeon_reservations').insert({
+      event_date: selectedDate, name, phone, party_size: Number(size), car_no: car || null
+    });
+    if (error) {
+      if ((error.message || '').includes('FULL')) {
+        show('err', '방금 해당 날짜가 마감되었습니다. 다른 날짜를 선택해 주세요.');
+      } else { throw error; }
+    } else {
+      show('ok', '신청이 접수되었습니다. 안내 문자를 확인하시고 24시간 이내에 입금해 주시면 입금 확인 순으로 확정됩니다.');
+      e.target.reset(); selectedDate = null;
+    }
+  } catch (err) {
+    console.error(err);
+    show('err', '접수 중 문제가 발생했습니다. 잠시 후 다시 시도하시거나 055-359-4562로 연락해 주세요.');
+  } finally {
+    btn.disabled = false; btn.textContent = '예약 신청하기';
+    loadCounts();
+  }
+});
+
+loadCounts();
+setInterval(loadCounts, 60000);
+</script>
+</body>
+</html>
