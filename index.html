@@ -383,7 +383,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
         <p class="msg" id="msg" role="status"></p>
       </form>
       <div class="paybox" id="paybox">
-        <b>입금 계좌</b> — <span id="acct">신청 접수 후 안내 문자로 알려드립니다</span><br>
+        <b>입금 계좌</b><br><span id="acct">신청 접수 후 안내 문자로 알려드립니다</span><br>
         <span class="small">입금자명은 대표자 이름과 같게 해주세요. 입금 확인 순으로 확정됩니다.</span>
       </div>
     </div>
@@ -405,7 +405,7 @@ const CONFIG = {
   SUPABASE_URL: 'https://snaldhxucwsaifqrccih.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYWxkaHh1Y3dzYWlmcXJjY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzIwNjAsImV4cCI6MjEwMzg0ODA2MH0.TUdhun_cBHsool0e2FZOOfznjFoC_u5B0MJCl1dTDhI',
   CAPACITY: 8,
-  ACCOUNT: '',   // ← 예: '농협 000-0000-0000-00 밀양문화관광재단' (비우면 문자 안내 문구가 표시됨)
+  ACCOUNT: '<b>농협 301-0391-7757-41</b><br>예금주 재단법인 밀양문화관광재단 <span class="small" style="opacity:.8">(2026시도문화예술기획지원사업 수입계좌)</span>',
   DATES: [
     { v: '2026-10-10', label: '10. 10. (토)', close: '2026-10-07T23:59:59+09:00' },
     { v: '2026-10-11', label: '10. 11. (일)', close: '2026-10-08T23:59:59+09:00' }
@@ -611,7 +611,7 @@ $('#rform').addEventListener('submit', async (e) => {
   }
 });
 
-if (CONFIG.ACCOUNT) $('#acct').textContent = CONFIG.ACCOUNT;
+if (CONFIG.ACCOUNT) $('#acct').innerHTML = CONFIG.ACCOUNT;
 tidyWrap();
 loadCounts();
 setInterval(loadCounts, 60000);
