@@ -19,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%}
-body{margin:0; background:var(--ink); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.08rem; line-height:1.9; word-break:keep-all; overflow-wrap:anywhere; text-wrap:pretty; word-break:keep-all; overflow:hidden}
+body{margin:0; background:var(--ink); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.08rem; line-height:1.8; word-break:keep-all; overflow-wrap:anywhere; text-wrap:pretty; word-break:keep-all; overflow:hidden}
 img{max-width:100%; display:block}
 a{color:var(--brown)} a:hover{color:var(--deep)}
 button{font-family:inherit}
@@ -37,6 +37,8 @@ button{font-family:inherit}
 .page .in.top{justify-content:flex-start}
 .pgno{position:absolute; top:calc(env(safe-area-inset-top,0px) + 30px); right:20px; width:46px; height:46px; border:none; color:var(--seal); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.02rem; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%239C3B22%27%3E%3Cpolygon%20points%3D%2713%2C2%2031%2C2%2042%2C13%2042%2C31%2031%2C42%2013%2C42%202%2C31%202%2C13%27%20stroke-width%3D%272.2%27%2F%3E%3Cpolygon%20points%3D%2715.5%2C6%2028.5%2C6%2038%2C15.5%2038%2C28.5%2028.5%2C38%2015.5%2C38%206%2C28.5%206%2C15.5%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M13%202L6%2015.5M31%202l7.5%2013.5M42%2031l-13.5%207M2%2031l13.5%207%27%20stroke-width%3D%271%27%20opacity%3D%27.4%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat; z-index:2}
 .back .pgno{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23C7B08A%27%3E%3Cpolygon%20points%3D%2713%2C2%2031%2C2%2042%2C13%2042%2C31%2031%2C42%2013%2C42%202%2C31%202%2C13%27%20stroke-width%3D%272.2%27%2F%3E%3Cpolygon%20points%3D%2715.5%2C6%2028.5%2C6%2038%2C15.5%2038%2C28.5%2028.5%2C38%2015.5%2C38%206%2C28.5%206%2C15.5%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M13%202L6%2015.5M31%202l7.5%2013.5M42%2031l-13.5%207M2%2031l13.5%207%27%20stroke-width%3D%271%27%20opacity%3D%27.4%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+h2.ptitle .sub2::before{content:' — '}
+@media(max-width:520px){h2.ptitle .sub2{display:block; margin-top:4px} h2.ptitle .sub2::before{content:none}}
 h2.ptitle{margin:0 0 38px; font-size:1.75rem; letter-spacing:2px}
 
 
@@ -57,7 +59,7 @@ h2.ptitle::after{content:""; display:block; width:84px; height:14px; margin-top:
 .waterm{position:absolute; left:5%; bottom:calc(var(--navh) + 5%); font-size:12rem; line-height:1; color:rgba(138,90,51,.07); pointer-events:none; user-select:none; font-weight:700; z-index:0}
 .page .in{position:relative; z-index:1}
 
-.drop{display:none; padding:12px 6px 6px; font-size:1.02rem; line-height:1.9; color:var(--ink)}
+.drop{display:none; padding:12px 6px 6px; font-size:1.02rem; line-height:1.8; color:var(--ink)}
 .drop.open{display:block}
 .ph:has(img)::before,.ph:has(img)::after{display:none}
 /* 이미지 슬롯 */
@@ -75,7 +77,9 @@ h2.ptitle::after{content:""; display:block; width:84px; height:14px; margin-top:
 .cover .vtext{position:absolute; top:calc(env(safe-area-inset-top,0px) + 40px); right:28px; writing-mode:vertical-rl; letter-spacing:13px; font-size:1rem; text-shadow:0 1px 8px rgba(34,28,21,.55)}
 .cover h1{margin:0; font-size:clamp(4.4rem,18vw,6.8rem); line-height:1; text-shadow:0 2px 16px rgba(34,28,21,.5)}
 .cover h1 .yeon{display:inline-block; font-family:'Gowun Batang',serif; font-size:.3em; border:2px solid var(--tan); color:var(--tan); border-radius:50%; width:2.1em; height:2.1em; line-height:2.05em; text-align:center; vertical-align:.55em; margin-left:.18em; text-shadow:none}
-.cover .date{margin:20px 0 2px; font-size:1.32rem; font-weight:700}
+.cover .kicker{letter-spacing:5px; font-size:.9rem; margin:0 0 6px; white-space:nowrap}
+.cover .date{margin:20px 0 2px; font-size:1.32rem; font-weight:700; white-space:nowrap}
+.cover .place span{display:block}
 .cover .place{font-size:1.04rem; opacity:.92}
 .badges{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap}
 .badge{border:1.2px solid rgba(246,240,226,.85); padding:7px 15px; font-size:.98rem}
@@ -85,7 +89,7 @@ h2.ptitle::after{content:""; display:block; width:84px; height:14px; margin-top:
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
 
 /* ── 이야기 ── */
-.lead{font-size:1.4rem; line-height:2}
+.lead{font-size:1.4rem; line-height:1.9}
 .lead .brush{line-height:1; vertical-align:-.08em; font-size:1.85rem; color:var(--brown)}
 .story p{margin:26px 0 0; font-size:1.12rem}
 .vseal{position:absolute; right:24px; bottom:calc(var(--navh) + 40px); writing-mode:vertical-rl; letter-spacing:10px; font-size:.92rem; color:var(--brown); opacity:.75}
@@ -110,6 +114,14 @@ ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
   .tl + .small, ul.incl + .small{text-align:center}    /* 균형 두 줄이 된 ※ 문구는 가운데 */
   .pager .mid .name{font-size:.9rem; letter-spacing:1px}
   .waterm{font-size:9rem}
+  .page .in,.sheet .in{padding-left:22px; padding-right:22px}
+  .tl + .small, ul.incl + .small{text-align:center}
+  .cover .vtext{display:none}
+  .cover .kicker{letter-spacing:2.5px; font-size:.82rem}
+  .cover .date{font-size:1.2rem}
+  .cover .place{font-size:.98rem}
+  .badges{gap:8px}
+  .badge{padding:6px 10px; font-size:.86rem; white-space:nowrap}
 }
 .ccard{border:1px solid rgba(34,28,21,.35); background:#FBF7EC; cursor:pointer; text-align:left; padding:0; display:flex; flex-direction:column}
 .ccard .ph{aspect-ratio:5/3}
@@ -126,14 +138,18 @@ ul.incl li .no{color:var(--brown); font-weight:700; flex:0 0 2.2em}
 .tl li{display:flex; gap:20px; padding:17px 2px; font-size:1.08rem; border-bottom:1px dashed rgba(34,28,21,.28)}
 .tl .t{flex:0 0 auto; min-width:82px; white-space:nowrap; font-weight:700; color:var(--brown)}
 .tl li span:last-child{flex:1}
-h1,h2,h3,.tl li span:last-child,.lab b,.lab span,.incl li,.ccard h3,.ccard .sub,.badge,.price-line .per,.cover .place,.cover .date,summary,form label,.datebtn,.agree span,.paybox,.small{text-wrap:balance}
+h1,h2,h3,.tl li span:last-child,.lab b,.lab span,.incl li,.ccard h3,.ccard .sub,.badge,.price-line .per,summary,form label,.datebtn,.agree span,.paybox,.small{text-wrap:balance}
 p,.detail p,.a,.drop,.story p,.lead{text-wrap:pretty}
+.lead,.story p,.detail p,.a,.drop,.paybox,.agree span,.sheet p,.page .small{text-align:justify; text-justify:inter-word}
 
 /* ── 이미지 버튼 ── */
 .btnstack{display:flex; flex-direction:column; gap:20px}
 .imgbtn{position:relative; display:block; border:none; padding:0; cursor:pointer; color:#F6F0E2; text-align:left; width:100%}
 .imgbtn .ph{aspect-ratio:16/8}
-.imgbtn .veil{position:absolute; inset:0; background:linear-gradient(to top, rgba(34,28,21,.68), rgba(34,28,21,.05) 55%)}
+.imgbtn .veil{position:absolute; inset:0; background:linear-gradient(to top, rgba(34,28,21,.82) 0%, rgba(34,28,21,.45) 42%, rgba(34,28,21,0) 70%)}
+.imgbtn .lab b,.imgbtn .lab span{text-shadow:0 1px 6px rgba(34,28,21,.8)}
+.imgbtn[data-toggle] .lab b::after{content:'  ▾'; font-size:.8em; opacity:.85}
+.imgbtn[aria-expanded='true'] .lab b::after{content:'  ▴'}
 .imgbtn .lab{position:absolute; left:18px; bottom:14px; right:18px}
 .imgbtn .lab b{font-size:1.25rem; letter-spacing:1.5px; display:block}
 .imgbtn .lab span{font-size:.92rem; opacity:.9}
@@ -205,10 +221,10 @@ nav.pager button:disabled{opacity:.25; cursor:default}
     <div class="ornwin tan" aria-hidden="true"></div>
     <p class="vtext brush">맛과 풍류가 머무는 밤</p>
     <div class="in">
-      <p style="letter-spacing:5px; font-size:.9rem; margin:0 0 6px">2026 백중마을 축제 · 유료 특별 프로그램</p>
+      <p class="kicker">2026 백중마을 축제 · 유료 특별 프로그램</p>
       <h1 class="brush">백중연<span class="yeon">宴</span></h1>
-      <p class="date">2026. 10. 10.(토) — 10. 11.(일) 저녁</p>
-      <p class="place">밀양 퇴로고가마을 고택 마당 · 18:00 시작 – 20:00 마감 (17:30 입장)</p>
+      <p class="date">10. 10.(토) · 10. 11.(일) 저녁</p>
+      <p class="place"><span>밀양 퇴로고가마을 고택 마당</span><span>18:00 시작 – 20:00 마감 · 17:30 입장</span></p>
       <div class="badges" id="badges" aria-live="polite">
         <span class="badge">10.10(토) 잔여 <b>—</b></span>
         <span class="badge">10.11(일) 잔여 <b>—</b></span>
@@ -221,7 +237,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
   <section class="page story" data-name="단 하루의 잔치">
     <span class="pgno">一</span><span class="waterm" aria-hidden="true">宴</span><div class="ornwin" aria-hidden="true"></div>
     <div class="in">
-      <h2 class="ptitle">단 하루, 상이 뒤집히던 날</h2>
+      <h2 class="ptitle">단 하루,<span class="sub2">상이 뒤집히던 날</span></h2>
       <p class="lead">음력 칠월 보름 <span class="brush">백중</span>. 한 해 농사에 허리가 굽은 머슴들에게, 이날만큼은 주인집이 상을 차려 올렸습니다. 새 옷 한 벌과 술 한 상, 그리고 온전히 노는 하루.</p>
       <p>백중연은 그 하루의 상을 오늘의 당신에게 다시 차립니다. 일반 관람이 끝난 오후 다섯 시 반, 고택 마을에 여덟 팀만 남습니다. 마당에 등이 켜지고, 상이 들어오고, 소리꾼이 부채를 폅니다. 올 한 해 애쓴 당신이 오늘의 상석입니다.</p>
     </div>
@@ -249,7 +265,7 @@ nav.pager button:disabled{opacity:.25; cursor:default}
   <section class="page" data-name="저녁 한 상">
     <span class="pgno">三</span><span class="waterm" aria-hidden="true">味</span>
     <div class="in top">
-      <h2 class="ptitle">저녁 한 상 — 그날의 잔칫상</h2>
+      <h2 class="ptitle">저녁 한 상<span class="sub2">그날의 잔칫상</span></h2>
       <p class="small" style="margin:-16px 0 24px">여섯 식구가 둘러앉는 <b>한 상 통차림</b> — 일곱 가지가 한꺼번에 오릅니다. 전은 깻잎과 고추, 전국 1등이 밀양 밭. 후식은 한천, 국내 최대 산지가 얼음골 사과를 굳혔습니다. <b>상 하나가 밀양 지도입니다.</b> 카드를 누르면 이야기가 열립니다.</p>
       <div class="cards" id="cards"></div>
     </div>
@@ -280,15 +296,15 @@ nav.pager button:disabled{opacity:.25; cursor:default}
         <button class="imgbtn" data-toggle="d-photo" aria-expanded="false">
           <div class="ph" data-file="img/family.jpg"><img src="img/family.jpg" alt="" onerror="this.remove()"></div>
           <div class="veil"></div>
-          <div class="lab"><b>남는 것 — 가족사진 액자</b><span>3대가 담장 앞에 · 참가팀 무료, 액자·택배 포함 · 누르면 자세히</span></div>
+          <div class="lab"><b>남는 것 — 가족사진 액자</b><span>3대가 담장 앞에 · 참가팀 무료, 액자·택배 포함</span></div>
         </button>
         <div class="drop" id="d-photo">참가일 낮 10–17시, 고택 포토존에서 3대가 한 장. 촬영 후 액자로 제작해 댁으로 택배 발송합니다. 참가팀은 무료, 일반 방문팀은 팀당 200,000원에 판매하는 상품이라 이 액자 하나로 참가비가 갈음됩니다.</div>
         <button class="imgbtn" data-toggle="d-day" aria-expanded="false">
           <div class="ph" data-file="img/day.jpg"><img src="img/day.jpg" alt="" onerror="this.remove()"></div>
           <div class="veil"></div>
-          <div class="lab"><b>아이의 하루 완성</b><span>체험 전부 포함 · 조선 캐릭터와 한바탕 · 누르면 자세히</span></div>
+          <div class="lab"><b>아이의 하루 완성</b><span>체험 전부 포함 · 조선 캐릭터와 한바탕</span></div>
         </button>
-        <div class="drop" id="d-day">낮 축제의 체험부스(만들기·전통놀이), 전통 장 만들기, 백중 춤사위 배우기, 그리고 골목마다 상주하는 조선 캐릭터 — 관상가·포졸·사또·추노꾼 — 와의 한바탕까지 전부 포함. 참가팀 확인 후 줄 서지 않고 우선 이용합니다. 퍼레이드 11:00·16:00, 백중놀이 공연 13:00. ※ 일정은 변경될 수 있습니다.</div>
+        <div class="drop" id="d-day">낮 축제의 체험부스(만들기·전통놀이), 전통 장 만들기, 백중 춤사위 배우기, 그리고 골목마다 상주하는 조선 캐릭터(<span style="white-space:nowrap">관상가·포졸·사또·추노꾼</span>)와의 한바탕까지 전부 포함. 참가팀 확인 후 줄 서지 않고 우선 이용합니다. <span style="white-space:nowrap">퍼레이드 11:00·16:00</span>, <span style="white-space:nowrap">백중놀이 공연 13:00</span>.<span class="small" style="display:block; margin-top:8px; opacity:.75">※ 일정은 변경될 수 있습니다.</span></div>
         <button class="imgbtn" data-open="reserve">
           <div class="ph" data-file="img/night.jpg"><img src="img/night.jpg" alt="" onerror="this.remove()"></div>
           <div class="veil"></div>
