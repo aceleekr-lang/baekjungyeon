@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>백중연 참가팀 쿠폰</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Brush+Script&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--paper:#F3ECDC; --ink:#221C15; --brown:#8A5A33; --tan:#C7B08A; --seal:#9C3B22; --ok:#2E6B3E}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:'Gowun Batang',serif; font-size:1.02rem; line-height:1.7; word-break:keep-all; padding:calc(env(safe-area-inset-top,0px) + 22px) 18px calc(env(safe-area-inset-bottom,0px) + 40px); max-width:560px; margin:0 auto}
+h1{font-family:'Nanum Brush Script',cursive; font-size:2.6rem; margin:0; line-height:1.1}
+.sub{color:var(--brown); font-size:.88rem; letter-spacing:2px; margin:0 0 14px}
+.team{border:1.4px solid var(--ink); background:#fff; padding:14px 16px; margin:0 0 18px}
+.team b{font-size:1.15rem}
+.team .st{display:inline-block; margin-left:8px; padding:2px 9px; font-size:.78rem; border:1.2px solid var(--ok); color:var(--ok)}
+.team .st.no{border-color:var(--seal); color:var(--seal)}
+.guide{font-size:.9rem; background:#EFE6D2; border-left:3px solid var(--brown); padding:10px 12px; margin:0 0 18px}
+.vendor{border:1.4px solid var(--ink); background:#FDFBF5; margin:0 0 14px}
+.vendor .hd{padding:12px 14px 8px; border-bottom:1px dashed rgba(138,90,51,.4)}
+.vendor .hd b{font-size:1.08rem}
+.vendor .hd .win{display:block; font-size:.86rem; color:var(--brown); margin-top:2px}
+.vendor .hd .win.open{color:var(--ok); font-weight:700}
+.vendor .hd .price{font-size:.8rem; opacity:.7}
+.chips{display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px}
+.chip{flex:1 1 calc(33% - 8px); min-width:92px; border:1.3px solid var(--ink); background:#fff; padding:10px 8px; text-align:center; font-size:.92rem; cursor:pointer; font-family:inherit}
+.chip small{display:block; font-size:.72rem; opacity:.7; margin-top:2px}
+.chip.used{background:#E7DCC4; border-style:dashed; color:#6b5b48; cursor:default}
+.chip:disabled{opacity:.45; cursor:default}
+.chip.go{border-color:var(--ok); color:var(--ok); font-weight:700}
+#toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%); background:var(--ink); color:var(--paper); padding:10px 18px; font-size:.9rem; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90vw; text-align:center}
+#toast.on{opacity:1}
+.err{color:var(--seal); margin-top:20px}
+</style>
+</head>
+<body>
+<h1>백중연 <span style="font-size:.6em">宴</span></h1>
+<p class="sub">참가팀 전용 체험 쿠폰</p>
+<div id="app"><p>불러오는 중…</p></div>
+<div id="toast"></div>
+<script>
+const CONFIG = {
+  SUPABASE_URL: 'https://snaldhxucwsaifqrccih.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYWxkaHh1Y3dzYWlmcXJjY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzIwNjAsImV4cCI6MjEwMzg0ODA2MH0.TUdhun_cBHsool0e2FZOOfznjFoC_u5B0MJCl1dTDhI'
+};
+const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+const token = new URLSearchParams(location.search).get('t') || '';
+const DL = { '2026-10-10':'10월 10일(토)', '2026-10-11':'10월 11일(일)' };
+const MSG = { NOT_FOUND:'쿠폰 링크가 올바르지 않습니다.', NOT_CONFIRMED:'입금 확인 후 사용할 수 있습니다.', USED:'이미 사용한 쿠폰입니다.',
+              BAD_PIN:'확인번호가 틀렸습니다. 체험 진행자에게 입력을 부탁하세요.', WRONG_DATE:'참가 날짜에만 사용할 수 있습니다.',
+              OUTSIDE_WINDOW:'지금은 참가팀 전용 시간이 아닙니다.' };
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),2600); }
+const toMin = s => { const [h,m]=s.split(':').map(Number); return h*60+m; };
+
+let data=null;
+async function load(){
+  if(!token){ $('#app').innerHTML='<p class="err">쿠폰 링크가 올바르지 않습니다. 확정 문자의 링크로 열어주세요.</p>'; return; }
+  const { data:d, error } = await sb.rpc('baekjungyeon_coupons_get', { p_token: token });
+  if(error){ $('#app').innerHTML='<p class="err">'+(MSG[(error.message||'').replace(/.*?(NOT_FOUND).*/,'$1')]||'불러오지 못했습니다. 잠시 후 다시 열어주세요.')+'</p>'; return; }
+  data=d; render();
+}
+function render(){
+  const d=data; const [nowDate, nowTime]=d.now_kst.split(' '); const nowMin=toMin(nowTime);
+  const isDay = nowDate===d.event_date; const confirmed = d.status==='confirmed';
+  let h='<div class="team"><b>'+d.name+' 팀</b><span class="st'+(confirmed?'':' no')+'">'+(confirmed?'확정':(d.status==='pending'?'입금 확인 전':'취소'))+'</span>'+
+        '<br>'+DL[d.event_date]+' · '+d.party_size+'명</div>';
+  h+='<div class="guide">체험 부스에서 <b>이 화면을 진행자에게 보여주고</b>, 쓸 쿠폰을 누른 뒤 진행자가 확인번호를 입력하면 사용 처리됩니다. 쿠폰은 <b>참가팀 전용 시간 안에서만</b> 쓸 수 있고, 가족 누구나 이 링크를 열어 쓸 수 있습니다.</div>';
+  if(!confirmed) h+='<p class="err">입금이 확인되면 쿠폰이 활성화됩니다.</p>';
+  for(const v of d.vendors){
+    const cs=d.coupons.filter(c=>c.kind===v.kind);
+    const open = isDay && v.windows.some(w=>nowMin>=toMin(w[0]) && nowMin<toMin(w[1]));
+    const winTxt = v.windows.map(w=>w[0]+'–'+w[1]).join(' / ');
+    h+='<div class="vendor"><div class="hd"><b>'+v.name+'</b><span class="win'+(open?' open':'')+'">참가팀 전용 시간 '+winTxt+(open?' · 지금 사용 가능':'')+'</span>'+
+       '<span class="price">'+(v.per_person?'1인 1장 · ':'팀당 1장 · ')+'일반가 '+v.unit_price.toLocaleString()+'원 → 참가비 포함</span></div><div class="chips">';
+    for(const c of cs){
+      if(c.used_at) h+='<button class="chip used" disabled>'+(v.per_person?c.seq+'번':'가족사진')+'<small>'+c.used_at+' 사용</small></button>';
+      else h+='<button class="chip'+(open&&confirmed?' go':'')+'" data-id="'+c.id+'" '+(open&&confirmed?'':'disabled')+'>'+(v.per_person?c.seq+'번':'가족사진')+'<small>'+(open&&confirmed?'눌러서 사용':'대기')+'</small></button>';
+    }
+    h+='</div></div>';
+  }
+  $('#app').innerHTML=h;
+  document.querySelectorAll('.chip[data-id]').forEach(b=>b.addEventListener('click',()=>redeem(b.dataset.id)));
+}
+async function redeem(id){
+  const pin = prompt('체험 진행자 확인번호를 입력해 주세요 (진행자가 입력)');
+  if(pin===null) return;
+  const { data:r, error } = await sb.rpc('baekjungyeon_coupon_redeem', { p_token: token, p_coupon: id, p_pin: pin.trim() });
+  if(error){ const code=Object.keys(MSG).find(k=>(error.message||'').includes(k)); toast(MSG[code]||'처리하지 못했습니다. 다시 시도해 주세요.'); return; }
+  toast('사용 처리 완료 ('+r.used_at+')'); await load();
+}
+load();
+setInterval(()=>{ if(data) load(); }, 60000);
+</script>
+</body>
+</html>

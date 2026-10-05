@@ -30,6 +30,7 @@ h1{font-size:1.3rem; margin:10px 0 4px}
 .bar button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
 .bar .sp{flex:1}
 .bar .act{border-color:var(--brown); color:var(--brown)}
+td .cp{padding:5px 9px; font-size:.75rem; border:1.2px solid var(--brown); color:var(--brown); background:#fff; cursor:pointer; white-space:nowrap}
 /* 표 */
 .wrap{overflow-x:auto; border:1.4px solid var(--ink); background:#fff}
 table{width:100%; border-collapse:collapse; min-width:760px; font-size:.85rem}
@@ -82,17 +83,25 @@ a.tel{color:var(--ink)}
     <button data-s="expired">기한경과</button>
     <button data-s="cancelled">취소</button>
     <span class="sp"></span>
+    <button class="act" id="settle">쿠폰 정산</button>
+    <button class="act" id="logcsv">사용내역 CSV</button>
     <button class="act" id="csv">CSV 내려받기</button>
     <button class="act" id="reload">새로고침</button>
   </div>
 
+  <div class="wrap" id="settleWrap" style="display:none; margin-bottom:14px">
+    <table>
+      <thead><tr><th>날짜</th><th>체험</th><th>단가</th><th>발급</th><th>사용</th><th>정산액</th></tr></thead>
+      <tbody id="stb"></tbody>
+    </table>
+  </div>
   <div class="wrap">
     <table>
       <thead><tr>
         <th>신청시각</th><th>날짜</th><th>대표자</th><th>연락처</th><th>인원</th>
-        <th>차량</th><th>동의</th><th>상태</th><th>처리</th><th>메모</th>
+        <th>차량</th><th>동의</th><th>상태</th><th>처리</th><th>쿠폰 링크</th><th>메모</th>
       </tr></thead>
-      <tbody id="tb"><tr><td colspan="10" class="empty">불러오는 중…</td></tr></tbody>
+      <tbody id="tb"><tr><td colspan="11" class="empty">불러오는 중…</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -141,7 +150,7 @@ function renderSum(){
 function renderTable(){
   const tb=$('#tb'); tb.innerHTML='';
   const list=rows.filter(r=>(fD==='all'||r.event_date===fD)&&(fS==='all'||eff(r)===fS));
-  if(!list.length){ tb.innerHTML='<tr><td colspan="10" class="empty">해당 조건의 신청이 없습니다.</td></tr>'; return; }
+  if(!list.length){ tb.innerHTML='<tr><td colspan="11" class="empty">해당 조건의 신청이 없습니다.</td></tr>'; return; }
   list.forEach(r=>{
     const st=eff(r); const tr=document.createElement('tr'); tr.className='st-'+st;
     tr.innerHTML=
@@ -158,14 +167,21 @@ function renderTable(){
         '<button class="b-cx" data-a="cancelled" '+(r.status==='cancelled'?'disabled':'')+'>취소</button>'+
         '<button data-a="pending" '+(r.status==='pending'?'disabled':'')+'>대기로</button>'+
       '</div></td>'+
+      '<td>'+(st==='confirmed'&&r.token?'<button class="cp" data-tok="'+r.token+'">링크 복사</button>':'—')+'</td>'+
       '<td class="memo"><input value="'+(r.memo||'').replace(/"/g,'&quot;')+'" placeholder="메모"></td>';
     tr.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>setStatus(r,b.dataset.a)));
+    const cb=tr.querySelector('.cp'); if(cb) cb.addEventListener('click',()=>copyLink(cb.dataset.tok));
     const mi=tr.querySelector('.memo input');
     mi.addEventListener('change',()=>saveMemo(r, mi.value));
     tb.appendChild(tr);
   });
 }
 
+function couponUrl(tok){ return location.href.replace(/admin\.html.*$/,'coupon.html?t='+tok); }
+async function copyLink(tok){
+  const url=couponUrl(tok); const txt='[백중연] 입금이 확인되어 참가가 확정되었습니다. 체험 쿠폰: '+url+' (참가팀 전용 시간에 진행자 확인 후 사용)';
+  try{ await navigator.clipboard.writeText(txt); toast('확정 문자용 문구+링크 복사'); }catch(e){ prompt('복사해서 문자로 보내세요', txt); }
+}
 async function setStatus(r, st){
   if(st==='cancelled' && !confirm(r.name+' ('+DL[r.event_date]+', '+r.party_size+'명) 팀을 취소할까요?\n환불이 필요한 경우 규정(5일 전 100% / 4~3일 80% / 2~1일 70% / 당일 10%)에 따라 별도 송금하세요.')) return;
   if(st==='confirmed' && !confirm(r.name+' 팀 입금을 확인했고 확정 처리할까요?')) return;
@@ -219,6 +235,23 @@ document.querySelectorAll('.bar [data-s]').forEach(b=>b.addEventListener('click'
   fS=b.dataset.s; document.querySelectorAll('.bar [data-s]').forEach(x=>x.setAttribute('aria-pressed',x===b)); renderTable();
 }));
 $('#csv').addEventListener('click', csv);
+$('#settle').addEventListener('click', async ()=>{
+  const wrap=$('#settleWrap'); if(wrap.style.display!=='none'){ wrap.style.display='none'; return; }
+  const { data, error } = await sb.rpc('baekjungyeon_admin_settlement', { p_pass: PASS });
+  if(error){ toast('정산 조회 실패 — setup.sql v3가 실행되었는지 확인'); return; }
+  const tb=$('#stb'); tb.innerHTML=''; let total=0; const byDate={};
+  (data||[]).forEach(x=>{ total+=Number(x.amount); byDate[x.event_date]=(byDate[x.event_date]||0)+Number(x.amount);
+    tb.innerHTML+='<tr><td>'+DL[x.event_date]+'</td><td>'+x.name+'</td><td>'+Number(x.unit_price).toLocaleString()+'원</td><td>'+x.issued_cnt+'</td><td><b>'+x.used_cnt+'</b></td><td>'+Number(x.amount).toLocaleString()+'원</td></tr>'; });
+  tb.innerHTML+='<tr><td colspan="5" style="text-align:right"><b>합계</b> ('+Object.entries(byDate).map(([d,v])=>DL[d]+' '+v.toLocaleString()+'원').join(' · ')+')</td><td><b>'+total.toLocaleString()+'원</b></td></tr>';
+  wrap.style.display='block';
+});
+$('#logcsv').addEventListener('click', async ()=>{
+  const { data, error } = await sb.rpc('baekjungyeon_admin_coupon_log', { p_pass: PASS });
+  if(error){ toast('사용내역 조회 실패'); return; }
+  const lines=['날짜,팀,체험,번호,사용시각'].concat((data||[]).map(x=>[DL[x.event_date],x.team,x.name,x.seq,new Date(x.used_at).toLocaleString('ko-KR')].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')));
+  const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const el=document.createElement('a'); el.href=URL.createObjectURL(blob); el.download='백중연_쿠폰사용내역_'+new Date().toISOString().slice(0,10)+'.csv'; el.click();
+});
 $('#reload').addEventListener('click', ()=>refresh().then(()=>toast('갱신 완료')).catch(()=>toast('갱신 실패')));
 
 if (PASS) tryEnter(PASS).catch(()=>{ $('#gate').style.display='block'; $('#app').style.display='none'; });
