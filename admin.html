@@ -48,7 +48,25 @@ td .btns{display:flex; gap:5px; flex-wrap:wrap}
 td .btns button{padding:5px 9px; font-size:.75rem; border:1.2px solid var(--ink); background:#fff; cursor:pointer; white-space:nowrap}
 td .btns .b-ok{border-color:var(--ok); color:var(--ok)}
 td .btns .b-cx{border-color:var(--seal); color:var(--seal)}
+td .btns .b-ed{border-color:var(--brown); color:var(--brown)}
 td .btns button:disabled{opacity:.35; cursor:default}
+td small.upd{display:block; color:var(--brown); font-size:.7rem}
+/* 수정 창 */
+#ov{position:fixed; inset:0; background:rgba(34,28,21,.55); display:none; align-items:center; justify-content:center; padding:16px; z-index:20}
+#ov.on{display:flex}
+#ed{background:var(--paper); border:1.5px solid var(--ink); width:100%; max-width:400px; padding:18px 18px 16px}
+#ed h2{font-size:1.05rem; margin:0 0 4px}
+#ed .who{font-size:.8rem; color:var(--brown); margin:0 0 14px}
+#ed label{display:block; font-size:.78rem; letter-spacing:1px; margin:10px 0 4px}
+#ed input,#ed select{width:100%; padding:10px; font-size:1rem; border:1.5px solid var(--ink); background:#fff; border-radius:0; font-family:inherit}
+#ed .row{display:flex; gap:10px}
+#ed .row>div{flex:1}
+#ed .note{font-size:.76rem; color:var(--brown); margin:12px 0 0; line-height:1.5}
+#ed .acts{display:flex; gap:8px; margin-top:16px}
+#ed .acts button{flex:1; padding:12px; font-size:.95rem; border:1.5px solid var(--ink); background:#fff; cursor:pointer}
+#ed .acts .save{background:var(--ink); color:var(--paper)}
+#ed .acts button:disabled{opacity:.5; cursor:default}
+#ed .err{color:var(--seal); font-size:.8rem; min-height:1.2em; margin:8px 0 0}
 td.memo input{width:110px; padding:4px 6px; font-size:.78rem; border:1px solid var(--tan); background:#FDFBF5}
 a.tel{color:var(--ink)}
 .empty{padding:30px; text-align:center; color:var(--brown)}
@@ -106,6 +124,31 @@ a.tel{color:var(--ink)}
   </div>
 </div>
 
+<div id="ov">
+  <form id="ed" autocomplete="off">
+    <h2>예약정보 수정</h2>
+    <p class="who" id="edWho"></p>
+    <div class="row">
+      <div><label>참가일</label>
+        <select id="edDate"><option value="2026-10-10">10. 10. (토)</option><option value="2026-10-11">10. 11. (일)</option></select></div>
+      <div><label>인원 (최대 6명)</label>
+        <select id="edSize"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    </div>
+    <label>대표자 이름</label>
+    <input id="edName" maxlength="20" required>
+    <label>연락처</label>
+    <input id="edPhone" inputmode="numeric" placeholder="010-0000-0000" required>
+    <label>차량번호 (없으면 비움)</label>
+    <input id="edCar" maxlength="12" placeholder="12가3456">
+    <p class="note">· 날짜를 옮기면 옮기는 날짜의 정원(8팀)을 다시 확인합니다.<br>· 확정 팀의 인원을 바꾸면 체험 쿠폰이 인원수에 맞게 자동으로 늘거나 회수됩니다. 이미 사용한 쿠폰 수보다 적게는 줄일 수 없습니다.<br>· 입금 상태는 바뀌지 않습니다(상태는 표의 처리 버튼으로).</p>
+    <p class="err" id="edErr"></p>
+    <div class="acts">
+      <button type="button" id="edCancel">닫기</button>
+      <button type="submit" class="save" id="edSave">저장</button>
+    </div>
+  </form>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -154,7 +197,7 @@ function renderTable(){
   list.forEach(r=>{
     const st=eff(r); const tr=document.createElement('tr'); tr.className='st-'+st;
     tr.innerHTML=
-      '<td>'+fmt(r.created_at)+'</td>'+
+      '<td>'+fmt(r.created_at)+(r.updated_at?'<small class="upd">수정 '+fmt(r.updated_at)+'</small>':'')+'</td>'+
       '<td>'+DL[r.event_date]+'</td>'+
       '<td class="nm">'+r.name+'</td>'+
       '<td><a class="tel" href="tel:'+r.phone+'">'+r.phone+'</a></td>'+
@@ -166,10 +209,12 @@ function renderTable(){
         '<button class="b-ok" data-a="confirmed" '+(r.status==='confirmed'?'disabled':'')+'>입금확정</button>'+
         '<button class="b-cx" data-a="cancelled" '+(r.status==='cancelled'?'disabled':'')+'>취소</button>'+
         '<button data-a="pending" '+(r.status==='pending'?'disabled':'')+'>대기로</button>'+
+        '<button class="b-ed" data-ed="1">수정</button>'+
       '</div></td>'+
       '<td>'+(st==='confirmed'&&r.token?'<button class="cp" data-tok="'+r.token+'">링크 복사</button>':'—')+'</td>'+
       '<td class="memo"><input value="'+(r.memo||'').replace(/"/g,'&quot;')+'" placeholder="메모"></td>';
     tr.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>setStatus(r,b.dataset.a)));
+    tr.querySelector('[data-ed]').addEventListener('click',()=>openEdit(r));
     const cb=tr.querySelector('.cp'); if(cb) cb.addEventListener('click',()=>copyLink(cb.dataset.tok));
     const mi=tr.querySelector('.memo input');
     mi.addEventListener('change',()=>saveMemo(r, mi.value));
@@ -198,11 +243,70 @@ async function saveMemo(r, memo){
   }catch(e){ toast('메모 저장 실패'); }
 }
 
+/* ── 예약정보 수정 ── */
+let edRow=null;
+const fmtPhone = s => { const d=String(s||'').replace(/\D/g,''); return d.length===11 ? d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7) : String(s||'').trim(); };
+const EDERR = {
+  FULL:'정원 초과 — 옮기려는 날짜의 유효 신청이 이미 8팀입니다.',
+  COUPON_USED:'이미 사용한 쿠폰 수보다 인원을 적게 할 수 없습니다. 쿠폰 사용내역을 확인하세요.',
+  BAD_PHONE:'연락처는 010-0000-0000 형식이어야 합니다.',
+  BAD_NAME:'대표자 이름은 1~20자여야 합니다.',
+  BAD_SIZE:'인원은 1~6명이어야 합니다.',
+  BAD_DATE:'참가일이 올바르지 않습니다.',
+  BAD_CAR:'차량번호는 12자 이내로 적어주세요.',
+  NOT_FOUND:'이미 삭제된 신청입니다. 새로고침하세요.',
+  DENIED:'암호가 맞지 않습니다. 다시 로그인하세요.'
+};
+function openEdit(r){
+  edRow=r;
+  $('#edWho').textContent='신청 '+fmt(r.created_at)+' · 현재 상태 '+SL[eff(r)];
+  $('#edDate').value=r.event_date; $('#edSize').value=String(r.party_size);
+  $('#edName').value=r.name; $('#edPhone').value=r.phone; $('#edCar').value=r.car_no||'';
+  $('#edErr').textContent=''; $('#edSave').disabled=false;
+  $('#ov').classList.add('on'); setTimeout(()=>$('#edName').focus(),50);
+}
+function closeEdit(){ $('#ov').classList.remove('on'); edRow=null; }
+async function saveEdit(ev){
+  ev.preventDefault(); if(!edRow) return;
+  const r=edRow, err=$('#edErr'); err.textContent='';
+  const v={ date:$('#edDate').value, size:Number($('#edSize').value), name:$('#edName').value.trim(),
+            phone:fmtPhone($('#edPhone').value), car:$('#edCar').value.trim() };
+  $('#edPhone').value=v.phone;
+  if(!v.name){ err.textContent=EDERR.BAD_NAME; return; }
+  if(!/^010-\d{4}-\d{4}$/.test(v.phone)){ err.textContent=EDERR.BAD_PHONE; return; }
+  const changed=[];
+  if(v.date!==r.event_date) changed.push('날짜 '+DL[r.event_date]+' → '+DL[v.date]);
+  if(v.size!==r.party_size) changed.push('인원 '+r.party_size+'명 → '+v.size+'명'+(r.status==='confirmed'?' (쿠폰 '+(v.size>r.party_size?'추가 발급':'회수')+')':''));
+  if(v.name!==r.name) changed.push('이름 '+r.name+' → '+v.name);
+  if(v.phone!==r.phone) changed.push('연락처 '+r.phone+' → '+v.phone);
+  if(v.car!==(r.car_no||'')) changed.push('차량 '+(r.car_no||'없음')+' → '+(v.car||'없음'));
+  if(!changed.length){ closeEdit(); return; }
+  if(!confirm('다음과 같이 수정할까요?\n\n· '+changed.join('\n· '))) return;
+  $('#edSave').disabled=true;
+  try{
+    const { error } = await sb.rpc('baekjungyeon_admin_edit', { p_pass: PASS, p_id: r.id, p_event_date: v.date,
+      p_name: v.name, p_phone: v.phone, p_party_size: v.size, p_car_no: v.car||null });
+    if(error) throw error;
+    closeEdit(); toast('예약정보 수정 완료'); await refresh();
+  }catch(e){
+    console.error(e);
+    const code=Object.keys(EDERR).find(k=>(e.message||'').includes(k));
+    err.textContent = EDERR[code] || '저장 실패 — setup.sql v4(admin_edit)가 실행되었는지 확인하세요.';
+    $('#edSave').disabled=false;
+  }
+}
+$('#ed').addEventListener('submit', saveEdit);
+$('#edCancel').addEventListener('click', closeEdit);
+$('#ov').addEventListener('click', e=>{ if(e.target===$('#ov')) closeEdit(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#ov').classList.contains('on')) closeEdit(); });
+$('#edPhone').addEventListener('blur', ()=>{ $('#edPhone').value=fmtPhone($('#edPhone').value); });
+
 function csv(){
-  const head=['신청시각','날짜','대표자','연락처','인원','차량','동의','상태','메모'];
+  const head=['신청시각','날짜','대표자','연락처','인원','차량','동의','상태','메모','수정시각'];
   const lines=[head.join(',')].concat(rows.map(r=>[
     new Date(r.created_at).toLocaleString('ko-KR'), DL[r.event_date], r.name, r.phone,
-    r.party_size, r.car_no||'', r.agreed?'동의':'', SL[eff(r)], (r.memo||'').replace(/[,\n]/g,' ')
+    r.party_size, r.car_no||'', r.agreed?'동의':'', SL[eff(r)], (r.memo||'').replace(/[,\n]/g,' '),
+    r.updated_at?new Date(r.updated_at).toLocaleString('ko-KR'):''
   ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')));
   const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
